@@ -23,7 +23,13 @@ use std::time::{Duration, Instant};
 use interprocess::local_socket::traits::Stream as _;
 use serde::{Deserialize, Deserializer};
 
-const STABLE_UPDATE_MANIFEST_URL: &str = "https://herdr.dev/latest.json";
+// herdr-cn: stable updates come from the herdr-cn release feed so `herdr
+// update` installs the localized build instead of the upstream english one.
+const STABLE_UPDATE_MANIFEST_URL: &str =
+    "https://raw.githubusercontent.com/Win-Hao/herdr-cn/zh-cn/latest.json";
+// herdr-cn: no localized preview feed exists yet, so the preview channel is
+// rejected instead of fetching upstream english preview builds.
+const HERDR_CN_PREVIEW_CHANNEL_ENABLED: bool = false;
 const PREVIEW_UPDATE_MANIFEST_URL: &str = "https://herdr.dev/preview.json";
 const HOMEBREW_FORMULA_API_URL: &str = "https://formulae.brew.sh/api/formula/herdr.json";
 const HERDR_UPDATE_COMMAND: &str = "herdr update";
@@ -466,6 +472,15 @@ fn release_info_from_preview_manifest(
 fn check_latest() -> Result<Option<ReleaseInfo>, String> {
     let channel = UpdateChannel::configured();
     if channel == UpdateChannel::Preview {
+        // herdr-cn: the preview channel would install upstream english
+        // preview builds and overwrite the localized binary; keep the code
+        // path compiled so it can be re-pointed at a herdr-cn preview feed.
+        if !HERDR_CN_PREVIEW_CHANNEL_ENABLED {
+            return Err(
+                "herdr-cn 暂不提供 preview 通道（会安装英文版覆盖汉化版）。请执行 `herdr channel set stable`。"
+                    .to_string(),
+            );
+        }
         return release_info_from_preview_manifest(&fetch_preview_manifest()?);
     }
 
@@ -1951,14 +1966,7 @@ fn homebrew_cellar_keg_root(path: &Path) -> Option<PathBuf> {
 // ---------------------------------------------------------------------------
 
 /// Manual self-update command (`herdr update`).
-/// herdr-cn: upstream self-update would download the english release and
-/// overwrite the localized binary, so it is disabled at the entry point.
-const HERDR_CN_SELF_UPDATE_DISABLED: bool = true;
-
 pub fn self_update(options: SelfUpdateOptions) -> Result<Version, String> {
-    if HERDR_CN_SELF_UPDATE_DISABLED {
-        return Err("self-update is disabled：herdr-cn 汉化版不使用上游自更新（会被英文版覆盖）。\n请从 herdr-cn 的 GitHub Releases 页面获取新版汉化包。".to_string());
-    }
     let channel = UpdateChannel::configured();
     #[cfg(windows)]
     if channel == UpdateChannel::Stable {

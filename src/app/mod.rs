@@ -696,10 +696,8 @@ impl App {
         // Background auto-update is disabled in monolithic no-session mode
         // and in debug/test builds so local development never mutates the
         // running binary out from under spawned test processes.
-        // herdr-cn: upstream version checks stay off regardless of config so
-        // the localized build never advertises english releases that would
-        // replace it. Get updates from herdr-cn releases instead.
-        let version_check_enabled = false;
+        let version_check_enabled =
+            background_update_check_enabled(no_session, config.update.version_check);
         let manifest_check_enabled =
             background_update_check_enabled(no_session, config.update.manifest_check);
         if version_check_enabled {
@@ -747,7 +745,7 @@ impl App {
                 .then_some(Instant::now() + AUTO_UPDATE_CHECK_INTERVAL),
             next_agent_manifest_update_check: manifest_check_enabled
                 .then_some(Instant::now() + AUTO_UPDATE_CHECK_INTERVAL),
-            update_version_check_enabled: version_check_enabled,
+            update_version_check_enabled: config.update.version_check,
             update_manifest_check_enabled: config.update.manifest_check,
             loaded_host_cursor: config.ui.host_cursor,
             agent_metadata_deadline: None,
@@ -1492,8 +1490,7 @@ impl App {
             let now = Instant::now();
             let previous_version_check_enabled = self.update_version_check_enabled;
             let previous_manifest_check_enabled = self.update_manifest_check_enabled;
-            // herdr-cn: version checks stay disabled across config reloads.
-            self.update_version_check_enabled = false;
+            self.update_version_check_enabled = config.update.version_check;
             self.update_manifest_check_enabled = config.update.manifest_check;
 
             if !self.update_version_check_enabled {

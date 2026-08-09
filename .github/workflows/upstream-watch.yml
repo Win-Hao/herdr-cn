@@ -1,0 +1,45 @@
+name: upstream-watch
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare upstream latest release with our base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          upstream=$(gh api repos/herdrdev/herdr/releases/latest --jq .tag_name)
+          base=$(cat .herdr-cn/upstream-base)
+          echo "upstream=$upstream base=$base"
+          if [ "$upstream" = "$base" ]; then
+            echo "已是最新，无需同步"
+            exit 0
+          fi
+          existing=$(gh issue list --state open --search "in:title $upstream" --json number --jq length)
+          if [ "$existing" != "0" ]; then
+            echo "同步 issue 已存在"
+            exit 0
+          fi
+          gh issue create \
+            --title "上游发布了 $upstream（当前汉化基于 $base）" \
+            --body "上游 herdr 发布了新版本 **$upstream**，当前 herdr-cn 基于 **$base**。
+
+同步流程：
+1. 合并上游 tag（\`git fetch upstream && git merge $upstream\`）
+2. 翻译新增文案（按既有术语表与规则：字符串匹配陷阱、compact 断言、协议值禁译）
+3. 跑测试，确认相对上游基线零回归
+4. 验帧后回填整帧摘要常量
+5. 更新 \`.herdr-cn/upstream-base\` 与 \`latest.json\`，发布 \`${upstream}-cn\`
+
+上游 Release：https://github.com/herdrdev/herdr/releases/tag/$upstream"
