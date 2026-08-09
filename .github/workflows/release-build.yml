@@ -74,7 +74,7 @@ jobs:
       - name: Package artifact
         run: |
           cp target/${{ matrix.target }}/release/herdr ${{ matrix.name }}
-          file ${{ matrix.name }} | grep -q "statically linked" || { file ${{ matrix.name }}; ldd ${{ matrix.name }}; exit 1; }
+          file ${{ matrix.name }} | grep -qE "statically linked|static-pie linked" || { file ${{ matrix.name }}; ldd ${{ matrix.name }} || true; exit 1; }
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -105,10 +105,11 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: ${{ matrix.target }}
 
-      - name: Install Zig
-        uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
-        with:
-          version: 0.15.2
+      - name: Install patched Zig on macOS
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install zig@0.15
+          echo "$(brew --prefix zig@0.15)/bin" >> "$GITHUB_PATH"
+          "$(brew --prefix zig@0.15)/bin/zig" version
 
       - name: Install macOS build tools
         run: brew install cmake ninja
