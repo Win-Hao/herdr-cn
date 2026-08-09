@@ -1951,7 +1951,14 @@ fn homebrew_cellar_keg_root(path: &Path) -> Option<PathBuf> {
 // ---------------------------------------------------------------------------
 
 /// Manual self-update command (`herdr update`).
+/// herdr-cn: upstream self-update would download the english release and
+/// overwrite the localized binary, so it is disabled at the entry point.
+const HERDR_CN_SELF_UPDATE_DISABLED: bool = true;
+
 pub fn self_update(options: SelfUpdateOptions) -> Result<Version, String> {
+    if HERDR_CN_SELF_UPDATE_DISABLED {
+        return Err("self-update is disabled：herdr-cn 汉化版不使用上游自更新（会被英文版覆盖）。\n请从 herdr-cn 的 GitHub Releases 页面获取新版汉化包。".to_string());
+    }
     let channel = UpdateChannel::configured();
     #[cfg(windows)]
     if channel == UpdateChannel::Stable {
