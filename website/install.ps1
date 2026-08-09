@@ -542,11 +542,13 @@ switch ($architecture) {
 }
 
 if ([string]::IsNullOrWhiteSpace($ManifestUrl)) {
-    $ManifestUrl = if ($Channel -eq "preview") {
-        "https://herdr.dev/preview.json"
-    } else {
-        "https://herdr.dev/latest.json"
+    # herdr-cn: installs come from the herdr-cn release feed; there is no
+    # localized preview channel.
+    if ($Channel -eq "preview") {
+        Write-Error "herdr-cn 暂不提供 preview 通道，请使用 stable。"
+        exit 1
     }
+    $ManifestUrl = "https://github.com/Win-Hao/herdr-cn/releases/latest/download/latest.json"
 }
 
 $herdrHome = if ([string]::IsNullOrWhiteSpace($env:HERDR_HOME)) {

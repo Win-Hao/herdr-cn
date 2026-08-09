@@ -25,8 +25,9 @@ use serde::{Deserialize, Deserializer};
 
 // herdr-cn: stable updates come from the herdr-cn release feed so `herdr
 // update` installs the localized build instead of the upstream english one.
+// The manifest is the `latest.json` asset attached to the newest release.
 const STABLE_UPDATE_MANIFEST_URL: &str =
-    "https://raw.githubusercontent.com/Win-Hao/herdr-cn/zh-cn/latest.json";
+    "https://github.com/Win-Hao/herdr-cn/releases/latest/download/latest.json";
 // herdr-cn: no localized preview feed exists yet, so the preview channel is
 // rejected instead of fetching upstream english preview builds.
 const HERDR_CN_PREVIEW_CHANNEL_ENABLED: bool = false;
@@ -654,7 +655,7 @@ fn install_windows_update_with_installer(
             "-ExecutionPolicy",
             "Bypass",
             "-Command",
-            "irm https://herdr.dev/install.ps1 | iex",
+            "irm https://raw.githubusercontent.com/Win-Hao/herdr-cn/zh-cn/website/install.ps1 | iex",
         ])
         .env("HERDR_CHANNEL", channel.as_str())
         // Drop any inherited PSModulePath. When herdr is launched from
@@ -1968,12 +1969,9 @@ fn homebrew_cellar_keg_root(path: &Path) -> Option<PathBuf> {
 /// Manual self-update command (`herdr update`).
 pub fn self_update(options: SelfUpdateOptions) -> Result<Version, String> {
     let channel = UpdateChannel::configured();
-    #[cfg(windows)]
-    if channel == UpdateChannel::Stable {
-        return Err(
-            "Windows builds are preview-only for now; run `herdr channel set preview`".into(),
-        );
-    }
+    // herdr-cn: upstream rejects stable self-update on Windows because it
+    // only ships Windows preview builds. The herdr-cn stable feed carries a
+    // Windows asset, so the stable channel works on Windows here.
 
     if is_homebrew_managed_install() {
         if channel == UpdateChannel::Preview {

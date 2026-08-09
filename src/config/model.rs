@@ -47,11 +47,10 @@ impl Default for UpdateConfig {
 }
 
 fn default_update_channel() -> UpdateChannelConfig {
-    if cfg!(windows) {
-        UpdateChannelConfig::Preview
-    } else {
-        UpdateChannelConfig::Stable
-    }
+    // herdr-cn: stable on every platform. Upstream defaults Windows to
+    // preview because it has no Windows stable builds; the herdr-cn feed
+    // does, and the localized build has no preview channel.
+    UpdateChannelConfig::Stable
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, Default)]
@@ -1148,19 +1147,20 @@ manifest_check = false
 
     #[cfg(windows)]
     #[test]
-    fn windows_update_config_defaults_to_preview() {
+    fn windows_update_config_defaults_to_stable() {
+        // herdr-cn: Windows defaults to stable like every other platform.
         let empty: Config = toml::from_str("").unwrap();
         let without_update_channel: Config =
             toml::from_str("[update]\nversion_check = false").unwrap();
 
         assert_eq!(
             Config::default().update.channel,
-            UpdateChannelConfig::Preview
+            UpdateChannelConfig::Stable
         );
-        assert_eq!(empty.update.channel, UpdateChannelConfig::Preview);
+        assert_eq!(empty.update.channel, UpdateChannelConfig::Stable);
         assert_eq!(
             without_update_channel.update.channel,
-            UpdateChannelConfig::Preview
+            UpdateChannelConfig::Stable
         );
     }
 
