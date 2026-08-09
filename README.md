@@ -1,87 +1,47 @@
-# herdr
+# herdr-cn · herdr 简体中文版
 
+> **非官方汉化发行版** · 基于 [herdr](https://github.com/herdrdev/herdr) v0.8.0 · Apache-2.0
+>
+> 本项目与 herdr 官方无隶属关系。"herdr" 名称属于其原作者，此处仅作描述性使用。
 
-<p align="center">
-  <img src="assets/logo.png" alt="herdr" width="100" />
-</p>
+herdr 是一个为 AI 编码 agent（Claude Code、Codex、Gemini CLI 等）设计的终端多路复用器：多工作区、多窗格并行管理 agent 会话，自动检测 agent 状态（运行中 / 待响应 / 完成），鼠标优先操作。本仓库提供**全界面简体中文**的编译发行版。
 
-<p align="center">
-  <a href="https://herdr.dev">herdr.dev</a> · <a href="#install">install</a> · <a href="https://herdr.dev/docs/quick-start/">quick start</a> · <a href="https://herdr.dev/docs/">docs</a> · <a href="#sponsors">sponsors</a>
-</p>
+## 与官方版的差异
 
-<p align="center">
-  English · <a href="README.zh-CN.md">简体中文</a>
-</p>
+- **全界面汉化**：侧边栏、菜单、对话框、设置、快捷键帮助、导航器、通知等全部用户可见文案（协议字段、配置键、CLI 保持原样以兼容生态）
+- **CJK 显示修复**：按钮 / 菜单宽度按 Unicode 显示宽度计算，中文不截断、点击区域不偏移
+- **更新渠道调整**：禁用了指向官方源的自更新（避免更新后变回英文版）；新版汉化包请从本仓库 [Releases](../../releases) 获取
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-666666?labelColor=333333" alt="Apache 2.0 license" /></a>
-  <a href="https://github.com/herdrdev/herdr/releases"><img src="https://img.shields.io/github/downloads/herdrdev/herdr/total?labelColor=333333&color=666666" alt="total GitHub release downloads" /></a>
-  <a href="https://github.com/herdrdev/herdr/stargazers"><img src="https://img.shields.io/github/stars/herdrdev/herdr?labelColor=333333&color=666666&logo=github" alt="GitHub stars" /></a>
-  <a href="https://github.com/herdrdev/herdr/releases/latest"><img src="https://img.shields.io/github/v/release/herdrdev/herdr?label=release&labelColor=333333&color=666666" alt="latest stable release" /></a>
-  <a href="https://formulae.brew.sh/formula/herdr"><img src="https://img.shields.io/homebrew/v/herdr?label=homebrew&labelColor=333333&color=666666" alt="Homebrew version" /></a>
-  <a href="https://x.com/herdrdev"><img src="https://img.shields.io/badge/follow-%40herdrdev-000000?logo=x&logoColor=white" alt="follow @herdrdev on X" /></a>
-</p>
+除以上改动外，功能与官方 v0.8.0 完全一致。官方原版说明见 [README.upstream.md](README.upstream.md)（英文）与 [README.zh-CN.md](README.zh-CN.md)（官方中文简介）。
 
----
-
-https://github.com/user-attachments/assets/043ec09f-4bdd-41d5-aee0-8fda6b83e267
-
-**agent multiplexer that lives in your terminal.**
-
-- **every agent at a glance** — blocked, working, done. real terminal views, not a wrapped interpretation.
-- **detach, agents keep running** — reattach from any terminal, or over ssh. sessions survive restarts.
-- **agents can use herdr too** — a pure socket api: agents spawn panes, read output, wait on each other. [agent skill →](https://herdr.dev/docs/agent-skill/)
-- **keyboard and mouse, both first-class** — tmux-style prefix keys *and* click, drag, split. pick per moment, not per tool.
-- **plugins** — extend panes and workflows. [browse the marketplace →](https://herdr.dev/plugins/)
-- **one rust binary, no electron** — runs in whatever terminal you already use.
-
----
-
-## install
+## 安装（macOS Apple Silicon）
 
 ```bash
-curl -fsSL https://herdr.dev/install.sh | sh
+curl -L -o herdr https://github.com/Win-Hao/herdr-cn/releases/latest/download/herdr-macos-aarch64
+chmod +x herdr
+xattr -d com.apple.quarantine herdr 2>/dev/null || true
+sudo mv herdr /usr/local/bin/herdr
 ```
 
-or `brew install herdr` · `mise use -g herdr` · windows beta: `powershell -ExecutionPolicy Bypass -c "irm https://herdr.dev/install.ps1 | iex"` · [binaries](https://github.com/herdrdev/herdr/releases)
+若之前在用官方英文版，先执行 `herdr server stop` 停掉旧服务再启动中文版（工作区布局会自动恢复）。
 
-then start it where the work lives:
+## 从源码编译
 
-```bash
-herdr
-```
-
-run your agents, split panes, walk away. `ctrl+b q` detaches, `herdr` reattaches. [quick start →](https://herdr.dev/docs/quick-start/)
-
-## docs
-
-everything lives at [herdr.dev/docs](https://herdr.dev/docs/): [quick start](https://herdr.dev/docs/quick-start/) · [concepts](https://herdr.dev/docs/concepts/) · [supported agents](https://herdr.dev/docs/agents/) · [keyboard](https://herdr.dev/docs/keyboard/) · [configuration](https://herdr.dev/docs/configuration/) · [session state](https://herdr.dev/docs/session-state/) · [remote](https://herdr.dev/docs/persistence-remote/) · [integrations](https://herdr.dev/docs/integrations/) · [plugins](https://herdr.dev/docs/plugins/) · [socket api](https://herdr.dev/docs/socket-api/)
-
-## sponsors
-
-herdr is built full-time, in the open. sponsoring directly funds development, stability, and the path to a real agent runtime.
-
-### gold
-
-<a href="https://terminaltrove.com/"><img src="assets/sponsors/terminal-trove.png" alt="Terminal Trove" width="200" /></a>
-
-[**→ become a sponsor**](https://github.com/sponsors/ogulcancelik) · enterprise / partnership: hey@herdr.dev · see [SPONSORS.md](./SPONSORS.md) for tiers. thank you 🐑
-
-## agent instructions
-
-if you are an ai agent helping with this repository, read [`AGENTS.md`](./AGENTS.md) before making changes and read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening issues or PRs.
-
-## development
+需要 Rust（rust-toolchain.toml 指定版本，rustup 自动处理）和 **zig 0.15.2**（`brew install zig@0.15`）：
 
 ```bash
-git clone https://github.com/herdrdev/herdr
-cd herdr
+export PATH="$(brew --prefix zig@0.15)/bin:$PATH"
 cargo build --release
-
-just test        # unit tests
-just check       # formatting, tests, and maintenance checks
 ```
 
-## license
+大陆网络下 zig 拉取依赖若报 `TlsInitializationFailed`，用 curl 手动下载 `vendor/libghostty-vt` 下各 `build.zig.zon` 中的依赖包后逐个 `zig fetch <文件>` 即可。
 
-Herdr is licensed under the [Apache License 2.0](LICENSE).
+## 跟进上游
+
+本仓库跟随上游 stable release 更新：上游发版 → 同步汉化 → 测试（与上游基线零回归）→ 发布对应的 `-cn` 版本。
+
+## 许可证与致谢
+
+- 上游 herdr 由 [herdrdev](https://github.com/herdrdev/herdr) 开发，Apache License 2.0，原 [LICENSE](LICENSE) 完整保留
+- 本仓库的修改（汉化及适配，见提交历史）同样以 Apache License 2.0 发布
+- 感谢上游对中文社区的友好（官方 README 提供中文版、已合并多个中文文档 PR）
