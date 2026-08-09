@@ -66,39 +66,38 @@ fn render_search(app: &AppState, frame: &mut Frame, area: Rect) {
             &mut spans,
             crate::detect::AgentState::Blocked,
             true,
-            "blocked",
+            "待响应",
             app,
         ),
         Some(NavigatorStateFilter::Working) => push_state_chip(
             &mut spans,
             crate::detect::AgentState::Working,
             true,
-            "working",
+            "运行中",
             app,
         ),
         Some(NavigatorStateFilter::Idle) => push_state_chip(
             &mut spans,
             crate::detect::AgentState::Idle,
             true,
-            "idle",
+            "空闲",
             app,
         ),
         Some(NavigatorStateFilter::Done) => push_state_chip(
             &mut spans,
             crate::detect::AgentState::Idle,
             false,
-            "done",
+            "完成",
             app,
         ),
-        None if query.is_empty() => spans.push(Span::styled(
-            "search panes",
-            Style::default().fg(p.overlay0),
-        )),
+        None if query.is_empty() => {
+            spans.push(Span::styled("搜索窗格", Style::default().fg(p.overlay0)))
+        }
         None => spans.push(Span::styled(query.to_string(), Style::default().fg(p.text))),
     }
     spans.push(Span::styled(
         format!(
-            "{count:>width$} panes",
+            "{count:>width$} 窗格",
             width = area.width.saturating_sub(16) as usize
         ),
         Style::default().fg(p.overlay0),
@@ -397,7 +396,7 @@ fn workspace_detail(
     };
     let label = ws.display_name_from(&app.terminals, terminal_runtimes);
     let pane_count = ws.tabs.iter().map(|tab| tab.panes.len()).sum::<usize>();
-    let mut parts = vec![label, format!("{pane_count} panes")];
+    let mut parts = vec![label, format!("{pane_count} 个窗格")];
     if !rowless_workspace_activity(app, terminal_runtimes, ws_idx).is_empty() {
         parts.push(rowless_workspace_activity(app, terminal_runtimes, ws_idx));
     }
@@ -419,11 +418,11 @@ fn tab_detail(
     let mut parts = vec![
         ws.display_name_from(&app.terminals, terminal_runtimes),
         format!(
-            "tab: {}",
+            "标签页: {}",
             ws.tab_display_name(tab_idx)
                 .unwrap_or_else(|| (tab_idx + 1).to_string())
         ),
-        format!("{} panes", tab.panes.len()),
+        format!("{} 个窗格", tab.panes.len()),
     ];
     let rows = app.navigator_rows_from(terminal_runtimes);
     if let Some(meta) = rows
@@ -453,13 +452,13 @@ fn pane_detail(
     let mut parts = vec![ws.display_name_from(&app.terminals, terminal_runtimes)];
     if ws.tabs.len() > 1 {
         parts.push(format!(
-            "tab: {}",
+            "标签页: {}",
             ws.tab_display_name(tab_idx)
                 .unwrap_or_else(|| (tab_idx + 1).to_string())
         ));
     }
     if let Some(pane_number) = ws.public_pane_number(pane_id) {
-        parts.push(format!("pane {pane_number}"));
+        parts.push(format!("窗格 {pane_number}"));
     }
     if let Some(terminal_id) = tab.terminal_id(pane_id) {
         if let Some(terminal) = app.terminals.get(terminal_id) {
@@ -485,7 +484,7 @@ fn pane_detail(
                     .state_labels
                     .get(display_state(state, seen))
                     .cloned()
-                    .unwrap_or_else(|| display_state(state, seen).to_string());
+                    .unwrap_or_else(|| display_state_label(state, seen).to_string());
                 parts.push(status);
             } else {
                 parts.push("shell".to_string());
@@ -522,6 +521,8 @@ fn row_state(
         .unwrap_or(crate::detect::AgentState::Unknown)
 }
 
+/// Lookup key into an agent's `state_labels`; must stay in the protocol
+/// vocabulary shared with the API and detection manifests.
 fn display_state(state: crate::detect::AgentState, seen: bool) -> &'static str {
     match (state, seen) {
         (crate::detect::AgentState::Blocked, _) => "blocked",
@@ -529,6 +530,17 @@ fn display_state(state: crate::detect::AgentState, seen: bool) -> &'static str {
         (crate::detect::AgentState::Idle, false) => "done",
         (crate::detect::AgentState::Idle, true) => "idle",
         (crate::detect::AgentState::Unknown, _) => "unknown",
+    }
+}
+
+/// Text shown for a state the agent did not supply its own label for.
+fn display_state_label(state: crate::detect::AgentState, seen: bool) -> &'static str {
+    match (state, seen) {
+        (crate::detect::AgentState::Blocked, _) => "待响应",
+        (crate::detect::AgentState::Working, _) => "运行中",
+        (crate::detect::AgentState::Idle, false) => "完成",
+        (crate::detect::AgentState::Idle, true) => "空闲",
+        (crate::detect::AgentState::Unknown, _) => "未知",
     }
 }
 
@@ -542,26 +554,26 @@ fn render_footer(app: &AppState, frame: &mut Frame, area: Rect) {
     let line = if app.navigator.search_focused {
         Line::from(vec![
             Span::styled(" enter", key),
-            Span::styled(" switch  ", dim),
+            Span::styled(" 切换  ", dim),
             Span::styled("↑↓", key),
-            Span::styled(" move  ", dim),
+            Span::styled(" 移动  ", dim),
             Span::styled("ctrl+u", key),
-            Span::styled(" clear  ", dim),
+            Span::styled(" 清除  ", dim),
             Span::styled("esc", key),
-            Span::styled(" back", dim),
+            Span::styled(" 返回", dim),
         ])
     } else {
         Line::from(vec![
             Span::styled(" enter", key),
-            Span::styled(" switch  ", dim),
+            Span::styled(" 切换  ", dim),
             Span::styled("/", key),
-            Span::styled(" search  ", dim),
+            Span::styled(" 搜索  ", dim),
             Span::styled("b/w/i/d/a", key),
-            Span::styled(" states  ", dim),
+            Span::styled(" 状态  ", dim),
             Span::styled("j/k/↑↓", key),
-            Span::styled(" move  ", dim),
+            Span::styled(" 移动  ", dim),
             Span::styled("esc", key),
-            Span::styled(" close", dim),
+            Span::styled(" 关闭", dim),
         ])
     };
     frame.render_widget(Paragraph::new(line), area);

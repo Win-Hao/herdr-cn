@@ -24,12 +24,12 @@ fn help_entry(key: impl Into<String>, label: &'static str) -> HelpEntry {
 }
 
 fn keybind_label(bindings: &crate::config::ActionKeybinds) -> String {
-    bindings.label().unwrap_or_else(|| "unset".to_string())
+    bindings.label().unwrap_or_else(|| "未设置".to_string())
 }
 
 fn indexed_label(bindings: &[crate::config::IndexedKeybind]) -> String {
     if bindings.is_empty() {
-        return "unset".to_string();
+        return "未设置".to_string();
     }
 
     let mut parts = Vec::new();
@@ -64,34 +64,31 @@ pub(super) fn keybind_help_groups(app: &AppState) -> Vec<HelpGroup> {
     let mut groups = Vec::new();
 
     groups.push((
-        "global",
+        "全局",
         vec![
             help_entry(
                 crate::config::format_key_combo((app.prefix_code, app.prefix_mods)),
-                "prefix mode",
+                "前缀键模式",
             ),
-            help_entry(keybind_label(&kb.help), "keybinds"),
-            help_entry(keybind_label(&kb.settings), "settings"),
-            help_entry(keybind_label(&kb.detach), "detach"),
-            help_entry(keybind_label(&kb.reload_config), "reload config"),
-            help_entry(
-                keybind_label(&kb.open_notification_target),
-                "open notification target",
-            ),
+            help_entry(keybind_label(&kb.help), "快捷键"),
+            help_entry(keybind_label(&kb.settings), "设置"),
+            help_entry(keybind_label(&kb.detach), "分离"),
+            help_entry(keybind_label(&kb.reload_config), "重新加载配置"),
+            help_entry(keybind_label(&kb.open_notification_target), "打开通知目标"),
         ],
     ));
 
     groups.push((
-        "navigation",
+        "导航",
         vec![
-            help_entry("esc", "back"),
+            help_entry("esc", "返回"),
             help_entry(
                 format!(
                     "{} / {}",
                     keybind_label(&kb.navigate.workspace_up),
                     keybind_label(&kb.navigate.workspace_down)
                 ),
-                "workspace list",
+                "工作区列表",
             ),
             help_entry(
                 format!(
@@ -101,67 +98,64 @@ pub(super) fn keybind_help_groups(app: &AppState) -> Vec<HelpGroup> {
                     keybind_label(&kb.navigate.pane_up),
                     keybind_label(&kb.navigate.pane_right)
                 ),
-                "move focus",
+                "移动焦点",
             ),
-            help_entry("tab / shift+tab", "cycle pane"),
-            help_entry("enter", "open workspace"),
-            help_entry("1..9", "switch workspace"),
+            help_entry("tab / shift+tab", "循环切换窗格"),
+            help_entry("enter", "打开工作区"),
+            help_entry("1..9", "切换工作区"),
         ],
     ));
 
     let workspace_tab = vec![
-        help_entry(keybind_label(&kb.workspace_picker), "workspace navigation"),
-        help_entry(keybind_label(&kb.goto), "session navigator"),
-        help_entry(keybind_label(&kb.new_workspace), "new workspace"),
-        help_entry(keybind_label(&kb.new_worktree), "new worktree"),
-        help_entry(keybind_label(&kb.open_worktree), "open worktree"),
-        help_entry(
-            keybind_label(&kb.remove_worktree),
-            "delete worktree checkout",
-        ),
-        help_entry(keybind_label(&kb.rename_workspace), "rename workspace"),
-        help_entry(keybind_label(&kb.close_workspace), "close workspace"),
-        help_entry(keybind_label(&kb.previous_workspace), "previous workspace"),
-        help_entry(keybind_label(&kb.next_workspace), "next workspace"),
-        help_entry(indexed_label(&kb.switch_workspace), "switch workspace 1-9"),
-        help_entry(keybind_label(&kb.previous_agent), "previous agent"),
-        help_entry(keybind_label(&kb.next_agent), "next agent"),
-        help_entry(indexed_label(&kb.focus_agent), "focus agent 1-9"),
-        help_entry(keybind_label(&kb.new_tab), "new tab"),
-        help_entry(keybind_label(&kb.rename_tab), "rename tab"),
-        help_entry(keybind_label(&kb.previous_tab), "previous tab"),
-        help_entry(keybind_label(&kb.next_tab), "next tab"),
-        help_entry(indexed_label(&kb.switch_tab), "switch tab 1-9"),
-        help_entry(keybind_label(&kb.close_tab), "close tab"),
+        help_entry(keybind_label(&kb.workspace_picker), "工作区导航"),
+        help_entry(keybind_label(&kb.goto), "会话导航器"),
+        help_entry(keybind_label(&kb.new_workspace), "新建工作区"),
+        help_entry(keybind_label(&kb.new_worktree), "新建工作树"),
+        help_entry(keybind_label(&kb.open_worktree), "打开工作树"),
+        help_entry(keybind_label(&kb.remove_worktree), "删除工作树检出"),
+        help_entry(keybind_label(&kb.rename_workspace), "重命名工作区"),
+        help_entry(keybind_label(&kb.close_workspace), "关闭工作区"),
+        help_entry(keybind_label(&kb.previous_workspace), "上一个工作区"),
+        help_entry(keybind_label(&kb.next_workspace), "下一个工作区"),
+        help_entry(indexed_label(&kb.switch_workspace), "切换工作区 1-9"),
+        help_entry(keybind_label(&kb.previous_agent), "上一个 Agent"),
+        help_entry(keybind_label(&kb.next_agent), "下一个 Agent"),
+        help_entry(indexed_label(&kb.focus_agent), "聚焦 Agent 1-9"),
+        help_entry(keybind_label(&kb.new_tab), "新建标签页"),
+        help_entry(keybind_label(&kb.rename_tab), "重命名标签页"),
+        help_entry(keybind_label(&kb.previous_tab), "上一个标签页"),
+        help_entry(keybind_label(&kb.next_tab), "下一个标签页"),
+        help_entry(indexed_label(&kb.switch_tab), "切换标签页 1-9"),
+        help_entry(keybind_label(&kb.close_tab), "关闭标签页"),
     ];
-    groups.push(("workspaces / tabs", workspace_tab));
+    groups.push(("工作区 / 标签页", workspace_tab));
 
     let panes = vec![
-        help_entry(keybind_label(&kb.split_vertical), "split vertical"),
-        help_entry(keybind_label(&kb.split_horizontal), "split horizontal"),
-        help_entry(keybind_label(&kb.close_pane), "close pane"),
-        help_entry(keybind_label(&kb.rename_pane), "rename pane"),
-        help_entry(keybind_label(&kb.edit_scrollback), "edit scrollback"),
-        help_entry(keybind_label(&kb.copy_mode), "copy mode"),
-        help_entry(keybind_label(&kb.zoom), "zoom pane"),
-        help_entry(keybind_label(&kb.resize_mode), "resize mode"),
-        help_entry(keybind_label(&kb.toggle_sidebar), "toggle sidebar"),
-        help_entry(keybind_label(&kb.focus_pane_left), "focus pane left"),
-        help_entry(keybind_label(&kb.focus_pane_down), "focus pane down"),
-        help_entry(keybind_label(&kb.focus_pane_up), "focus pane up"),
-        help_entry(keybind_label(&kb.focus_pane_right), "focus pane right"),
-        help_entry(keybind_label(&kb.cycle_pane_next), "cycle pane next"),
+        help_entry(keybind_label(&kb.split_vertical), "垂直分割"),
+        help_entry(keybind_label(&kb.split_horizontal), "水平分割"),
+        help_entry(keybind_label(&kb.close_pane), "关闭窗格"),
+        help_entry(keybind_label(&kb.rename_pane), "重命名窗格"),
+        help_entry(keybind_label(&kb.edit_scrollback), "编辑滚动历史"),
+        help_entry(keybind_label(&kb.copy_mode), "复制模式"),
+        help_entry(keybind_label(&kb.zoom), "缩放窗格"),
+        help_entry(keybind_label(&kb.resize_mode), "调整大小模式"),
+        help_entry(keybind_label(&kb.toggle_sidebar), "切换侧边栏"),
+        help_entry(keybind_label(&kb.focus_pane_left), "聚焦左侧窗格"),
+        help_entry(keybind_label(&kb.focus_pane_down), "聚焦下方窗格"),
+        help_entry(keybind_label(&kb.focus_pane_up), "聚焦上方窗格"),
+        help_entry(keybind_label(&kb.focus_pane_right), "聚焦右侧窗格"),
+        help_entry(keybind_label(&kb.cycle_pane_next), "循环切换到下一个窗格"),
         help_entry(
             keybind_label(&kb.cycle_pane_previous),
-            "cycle pane previous",
+            "循环切换到上一个窗格",
         ),
-        help_entry(keybind_label(&kb.last_pane), "last pane"),
+        help_entry(keybind_label(&kb.last_pane), "最近使用的窗格"),
     ];
-    groups.push(("panes", panes));
+    groups.push(("窗格", panes));
 
     if !kb.custom_commands.is_empty() {
         groups.push((
-            "custom",
+            "自定义",
             kb.custom_commands
                 .iter()
                 .map(|binding| {
@@ -171,7 +165,7 @@ pub(super) fn keybind_help_groups(app: &AppState) -> Vec<HelpGroup> {
                             .description
                             .clone()
                             .map(Cow::Owned)
-                            .unwrap_or(Cow::Borrowed("custom command")),
+                            .unwrap_or(Cow::Borrowed("自定义命令")),
                     )
                 })
                 .collect(),
@@ -220,7 +214,7 @@ pub(crate) fn keybind_help_lines(app: &AppState) -> Vec<(usize, Line<'static>)> 
     let mut lines = Vec::new();
 
     if groups.is_empty() {
-        let message = " no matching keybinds";
+        let message = " 没有匹配的快捷键";
         return vec![(
             message.chars().count(),
             Line::from(Span::styled(
@@ -266,15 +260,15 @@ pub(super) fn render_keybind_help_overlay(app: &AppState, frame: &mut Frame) {
     let header_rows =
         Layout::vertical([Constraint::Length(1), Constraint::Length(1)]).areas::<2>(stack.header);
 
-    render_modal_header(frame, header_rows[0], "keybinds", &app.palette);
+    render_modal_header(frame, header_rows[0], "快捷键", &app.palette);
     render_action_button(
         frame,
         release_notes_close_button_rect(header_rows[0]),
         Some("esc"),
         if app.keybind_help.search_focused {
-            "back"
+            "返回"
         } else {
-            "close"
+            "关闭"
         },
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
@@ -298,7 +292,7 @@ pub(super) fn render_keybind_help_overlay(app: &AppState, frame: &mut Frame) {
         ])
     } else {
         Line::from(Span::styled(
-            " press / to filter by command or shortcut",
+            " 按 / 可按命令或快捷键筛选",
             Style::default().fg(app.palette.overlay0),
         ))
     };
@@ -346,27 +340,27 @@ pub(super) fn render_keybind_help_overlay(app: &AppState, frame: &mut Frame) {
 
     let footer = if app.keybind_help.search_focused {
         Line::from(vec![
-            Span::styled(" filter ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("type/backspace", Style::default().fg(app.palette.text)),
+            Span::styled(" 筛选 ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("输入/退格", Style::default().fg(app.palette.text)),
             Span::styled(" · ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("clear ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("清除 ", Style::default().fg(app.palette.overlay0)),
             Span::styled("ctrl+u", Style::default().fg(app.palette.text)),
             Span::styled(" · ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("scroll ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("滚动 ", Style::default().fg(app.palette.overlay0)),
             Span::styled("↑↓/pgup/pgdn", Style::default().fg(app.palette.text)),
             Span::styled(" · ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("back ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("返回 ", Style::default().fg(app.palette.overlay0)),
             Span::styled("esc", Style::default().fg(app.palette.text)),
         ])
     } else {
         Line::from(vec![
-            Span::styled(" search ", Style::default().fg(app.palette.overlay0)),
+            Span::styled(" 搜索 ", Style::default().fg(app.palette.overlay0)),
             Span::styled("/", Style::default().fg(app.palette.text)),
             Span::styled(" · ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("scroll ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("滚动 ", Style::default().fg(app.palette.overlay0)),
             Span::styled("j/k/↑↓/pgup/pgdn", Style::default().fg(app.palette.text)),
             Span::styled(" · ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("close ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("关闭 ", Style::default().fg(app.palette.overlay0)),
             Span::styled("esc/enter", Style::default().fg(app.palette.text)),
         ])
     };

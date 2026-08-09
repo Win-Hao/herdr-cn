@@ -7,8 +7,9 @@ use ratatui::{
 };
 
 use super::scrollbar::{release_notes_scrollbar_rect, render_scrollbar};
+use super::text::display_width_u16;
 use super::widgets::{
-    action_button_width, modal_stack_areas, panel_contrast_fg, render_action_button,
+    action_button_text, modal_stack_areas, panel_contrast_fg, render_action_button,
     render_modal_header, render_modal_shell,
 };
 use crate::app::{
@@ -63,9 +64,9 @@ pub(super) fn render_release_notes_overlay(app: &AppState, frame: &mut Frame, ar
         &app.palette,
     );
     let subtitle = if notes.preview {
-        "update ready"
+        "更新就绪"
     } else {
-        "what's new in this release"
+        "本次发布的更新内容"
     };
     frame.render_widget(
         Paragraph::new(subtitle).style(Style::default().fg(app.palette.overlay1)),
@@ -75,7 +76,7 @@ pub(super) fn render_release_notes_overlay(app: &AppState, frame: &mut Frame, ar
         frame,
         release_notes_close_button_rect(header_rows[0]),
         Some("esc"),
-        "close",
+        "关闭",
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
             .bg(app.palette.accent)
@@ -124,10 +125,10 @@ pub(super) fn render_release_notes_overlay(app: &AppState, frame: &mut Frame, ar
 
     frame.render_widget(
         Paragraph::new(Line::from(vec![
-            Span::styled(" scroll ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("wheel ↑↓", Style::default().fg(app.palette.text)),
+            Span::styled(" 滚动 ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("滚轮 ↑↓", Style::default().fg(app.palette.text)),
             Span::styled("  ·  ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("close", Style::default().fg(app.palette.overlay0)),
+            Span::styled("关闭", Style::default().fg(app.palette.overlay0)),
             Span::styled(" esc / enter ", Style::default().fg(app.palette.text)),
         ])),
         stack.footer.unwrap_or_default(),
@@ -173,9 +174,9 @@ pub(super) fn render_product_announcement_overlay(app: &AppState, frame: &mut Fr
 
     render_modal_header(frame, header_title_area, &announcement.title, &app.palette);
     let subtitle = if announcement.preview {
-        "product announcement preview"
+        "产品公告预览"
     } else {
-        "product announcement"
+        "产品公告"
     };
     frame.render_widget(
         Paragraph::new(format!("{subtitle} · v{}", announcement.version))
@@ -186,7 +187,7 @@ pub(super) fn render_product_announcement_overlay(app: &AppState, frame: &mut Fr
         frame,
         release_notes_close_button_rect(header_rows[0]),
         Some("esc"),
-        "close",
+        "关闭",
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
             .bg(app.palette.accent)
@@ -235,10 +236,10 @@ pub(super) fn render_product_announcement_overlay(app: &AppState, frame: &mut Fr
 
     frame.render_widget(
         Paragraph::new(Line::from(vec![
-            Span::styled(" scroll ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("wheel ↑↓", Style::default().fg(app.palette.text)),
+            Span::styled(" 滚动 ", Style::default().fg(app.palette.overlay0)),
+            Span::styled("滚轮 ↑↓", Style::default().fg(app.palette.text)),
             Span::styled("  ·  ", Style::default().fg(app.palette.overlay0)),
-            Span::styled("close", Style::default().fg(app.palette.overlay0)),
+            Span::styled("关闭", Style::default().fg(app.palette.overlay0)),
             Span::styled(" esc / enter ", Style::default().fg(app.palette.text)),
         ])),
         stack.footer.unwrap_or_default(),
@@ -400,7 +401,7 @@ fn release_notes_preview_line_entries<'a>(
                     "●",
                     Style::default().fg(p.accent).add_modifier(Modifier::BOLD),
                 ),
-                Span::styled(" update ready", title_style),
+                Span::styled(" 更新就绪", title_style),
             ]),
         ),
         (instruction_width + 1, Line::from(instruction_spans)),
@@ -440,7 +441,7 @@ pub(crate) fn release_notes_wrapped_line_count(lines: &[(usize, Line<'_>)], widt
 }
 
 pub(crate) fn release_notes_close_button_rect(area: Rect) -> Rect {
-    let width = action_button_width(Some("esc"), "close");
+    let width = display_width_u16(&action_button_text(Some("esc"), "关闭"));
     Rect::new(area.x + area.width.saturating_sub(width), area.y, width, 1)
 }
 
@@ -493,7 +494,7 @@ mod tests {
             .collect::<Vec<_>>();
 
         assert_eq!(lines.len(), 2);
-        assert_eq!(line_text(&lines[0]), " ● update ready");
+        assert_eq!(line_text(&lines[0]), " ● 更新就绪");
         assert_eq!(
             line_text(&lines[1]),
             " detach, run herdr update, then follow its restart guidance"
@@ -517,7 +518,7 @@ mod tests {
 
         let lines = release_notes_display_lines(&notes, "herdr update", &palette);
 
-        assert_eq!(line_text(&lines[0].1), " ● update ready");
+        assert_eq!(line_text(&lines[0].1), " ● 更新就绪");
         assert_eq!(
             line_text(&lines[1].1),
             " detach, run herdr update, then follow its restart guidance"

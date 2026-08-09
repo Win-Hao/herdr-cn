@@ -23,15 +23,15 @@ pub(crate) fn rename_button_rects(inner: Rect) -> (Rect, Rect, Rect) {
         &[
             ActionButtonSpec {
                 hint: Some("↵"),
-                label: "save",
+                label: "保存",
             },
             ActionButtonSpec {
                 hint: Some("^c"),
-                label: "clear",
+                label: "清除",
             },
             ActionButtonSpec {
                 hint: Some("esc"),
-                label: "cancel",
+                label: "取消",
             },
         ],
         2,
@@ -44,11 +44,11 @@ pub(super) fn render_rename_overlay(app: &AppState, frame: &mut Frame, area: Rec
     super::dim_background(frame, area);
 
     let title = match app.mode {
-        Mode::RenameWorkspace if app.pending_workspace_create_cwd.is_some() => "new workspace",
-        Mode::RenameWorkspace => "rename workspace",
-        Mode::RenameTab if app.creating_new_tab => "new tab",
-        Mode::RenameTab => "rename tab",
-        Mode::RenamePane => "rename pane",
+        Mode::RenameWorkspace if app.pending_workspace_create_cwd.is_some() => "新建工作区",
+        Mode::RenameWorkspace => "重命名工作区",
+        Mode::RenameTab if app.creating_new_tab => "新建标签页",
+        Mode::RenameTab => "重命名标签页",
+        Mode::RenamePane => "重命名窗格",
         _ => return,
     };
 
@@ -87,7 +87,7 @@ pub(super) fn render_rename_overlay(app: &AppState, frame: &mut Frame, area: Rec
         frame,
         save_rect,
         Some("↵"),
-        "save",
+        "保存",
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
             .bg(app.palette.accent)
@@ -97,7 +97,7 @@ pub(super) fn render_rename_overlay(app: &AppState, frame: &mut Frame, area: Rec
         frame,
         clear_rect,
         Some("^c"),
-        "clear",
+        "清除",
         Style::default()
             .fg(app.palette.text)
             .bg(app.palette.surface0)
@@ -107,7 +107,7 @@ pub(super) fn render_rename_overlay(app: &AppState, frame: &mut Frame, area: Rec
         frame,
         cancel_rect,
         Some("esc"),
-        "cancel",
+        "取消",
         Style::default()
             .fg(app.palette.text)
             .bg(app.palette.surface0)
@@ -137,11 +137,11 @@ pub(crate) fn new_linked_worktree_button_rects(inner: Rect) -> (Rect, Rect) {
         &[
             ActionButtonSpec {
                 hint: Some("↵"),
-                label: "create and open",
+                label: "创建并打开",
             },
             ActionButtonSpec {
                 hint: Some("esc"),
-                label: "cancel",
+                label: "取消",
             },
         ],
         2,
@@ -156,9 +156,9 @@ pub(crate) fn remove_worktree_popup_rect(area: Rect) -> Option<Rect> {
 
 pub(crate) fn remove_worktree_button_rects(inner: Rect, force_confirmation: bool) -> (Rect, Rect) {
     let primary_label = if force_confirmation {
-        "delete anyway"
+        "仍然删除"
     } else {
-        "remove"
+        "移除"
     };
     let rects = action_button_row_rects(
         inner,
@@ -169,7 +169,7 @@ pub(crate) fn remove_worktree_button_rects(inner: Rect, force_confirmation: bool
             },
             ActionButtonSpec {
                 hint: Some("esc"),
-                label: "cancel",
+                label: "取消",
             },
         ],
         2,
@@ -216,11 +216,11 @@ pub(crate) fn open_existing_worktree_button_rects(inner: Rect) -> (Rect, Rect) {
         &[
             ActionButtonSpec {
                 hint: Some("↵"),
-                label: "open",
+                label: "打开",
             },
             ActionButtonSpec {
                 hint: Some("esc"),
-                label: "cancel",
+                label: "取消",
             },
         ],
         2,
@@ -260,10 +260,10 @@ pub(super) fn render_new_linked_worktree_overlay(app: &AppState, frame: &mut Fra
     ])
     .areas::<8>(inner);
 
-    render_modal_header(frame, rows[0], "new worktree", &app.palette);
+    render_modal_header(frame, rows[0], "新建工作树", &app.palette);
 
     frame.render_widget(
-        Paragraph::new(" branch").style(Style::default().fg(app.palette.overlay0)),
+        Paragraph::new(" 分支").style(Style::default().fg(app.palette.overlay0)),
         rows[1],
     );
     let input_rect = Rect::new(rows[2].x, rows[2].y, rows[2].width, 1);
@@ -279,7 +279,7 @@ pub(super) fn render_new_linked_worktree_overlay(app: &AppState, frame: &mut Fra
 
     let checkout = create.checkout_path.display().to_string();
     frame.render_widget(
-        Paragraph::new(" checkout").style(Style::default().fg(app.palette.overlay0)),
+        Paragraph::new(" 检出路径").style(Style::default().fg(app.palette.overlay0)),
         rows[3],
     );
     frame.render_widget(
@@ -289,7 +289,7 @@ pub(super) fn render_new_linked_worktree_overlay(app: &AppState, frame: &mut Fra
 
     if create.creating {
         frame.render_widget(
-            Paragraph::new(" creating…").style(Style::default().fg(app.palette.overlay0)),
+            Paragraph::new(" 正在创建…").style(Style::default().fg(app.palette.overlay0)),
             rows[5],
         );
     } else if let Some(error) = &create.error {
@@ -306,7 +306,7 @@ pub(super) fn render_new_linked_worktree_overlay(app: &AppState, frame: &mut Fra
         frame,
         create_rect,
         Some("↵"),
-        "create and open",
+        "创建并打开",
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
             .bg(app.palette.accent)
@@ -316,7 +316,7 @@ pub(super) fn render_new_linked_worktree_overlay(app: &AppState, frame: &mut Fra
         frame,
         cancel_rect,
         Some("esc"),
-        "cancel",
+        "取消",
         Style::default()
             .fg(app.palette.text)
             .bg(app.palette.surface0)
@@ -352,7 +352,7 @@ pub(super) fn render_remove_worktree_overlay(app: &AppState, frame: &mut Frame, 
 
     frame.render_widget(
         Paragraph::new(Line::from(vec![Span::styled(
-            " delete worktree checkout?",
+            " 删除工作树检出目录？",
             Style::default()
                 .fg(app.palette.red)
                 .add_modifier(Modifier::BOLD),
@@ -360,8 +360,7 @@ pub(super) fn render_remove_worktree_overlay(app: &AppState, frame: &mut Frame, 
         rows[0],
     );
     frame.render_widget(
-        Paragraph::new(" This removes the checkout folder:")
-            .style(Style::default().fg(app.palette.overlay0)),
+        Paragraph::new(" 这会删除该检出目录：").style(Style::default().fg(app.palette.overlay0)),
         rows[1],
     );
     frame.render_widget(
@@ -370,20 +369,20 @@ pub(super) fn render_remove_worktree_overlay(app: &AppState, frame: &mut Frame, 
         rows[2],
     );
     frame.render_widget(
-        Paragraph::new(" The branch is not deleted. The Herdr workspace will close.")
+        Paragraph::new(" 分支不会被删除，但 Herdr 工作区会关闭。")
             .style(Style::default().fg(app.palette.overlay0)),
         rows[3],
     );
     if remove.force_confirmation {
         frame.render_widget(
-            Paragraph::new(" Dirty or untracked files will be permanently deleted.")
+            Paragraph::new(" 未提交或未跟踪的文件将被永久删除。")
                 .style(Style::default().fg(app.palette.red)),
             rows[4],
         );
     }
     if remove.removing {
         frame.render_widget(
-            Paragraph::new(" removing…").style(Style::default().fg(app.palette.overlay0)),
+            Paragraph::new(" 正在移除…").style(Style::default().fg(app.palette.overlay0)),
             rows[5],
         );
     } else if let Some(error) = &remove.error {
@@ -395,9 +394,9 @@ pub(super) fn render_remove_worktree_overlay(app: &AppState, frame: &mut Frame, 
 
     let (remove_rect, cancel_rect) = remove_worktree_button_rects(inner, remove.force_confirmation);
     let remove_label = if remove.force_confirmation {
-        "delete anyway"
+        "仍然删除"
     } else {
-        "remove"
+        "移除"
     };
     render_action_button(
         frame,
@@ -413,7 +412,7 @@ pub(super) fn render_remove_worktree_overlay(app: &AppState, frame: &mut Frame, 
         frame,
         cancel_rect,
         Some("esc"),
-        "cancel",
+        "取消",
         Style::default()
             .fg(app.palette.text)
             .bg(app.palette.surface0)
@@ -441,7 +440,7 @@ pub(super) fn render_open_existing_worktree_overlay(app: &AppState, frame: &mut 
     render_modal_header(
         frame,
         Rect::new(inner.x, inner.y, inner.width, 1),
-        "open worktree",
+        "打开工作树",
         &app.palette,
     );
     render_open_worktree_search(
@@ -515,8 +514,7 @@ pub(super) fn render_open_existing_worktree_overlay(app: &AppState, frame: &mut 
 
     if filtered.is_empty() {
         frame.render_widget(
-            Paragraph::new(" no matching worktrees")
-                .style(Style::default().fg(app.palette.overlay0)),
+            Paragraph::new(" 没有匹配的工作树").style(Style::default().fg(app.palette.overlay0)),
             Rect::new(inner.x, inner.y.saturating_add(3), inner.width, 1),
         );
     }
@@ -538,7 +536,7 @@ pub(super) fn render_open_existing_worktree_overlay(app: &AppState, frame: &mut 
         frame,
         open_rect,
         Some("↵"),
-        "open",
+        "打开",
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
             .bg(app.palette.accent)
@@ -548,7 +546,7 @@ pub(super) fn render_open_existing_worktree_overlay(app: &AppState, frame: &mut 
         frame,
         cancel_rect,
         Some("esc"),
-        "cancel",
+        "取消",
         Style::default()
             .fg(app.palette.text)
             .bg(app.palette.surface0)
@@ -571,14 +569,14 @@ fn render_open_worktree_search(
     };
     let filtered_count = open.filtered_indices().len();
     let count = if open.query.trim().is_empty() {
-        format!("{} checkouts", open.entries.len())
+        format!("{} 个检出", open.entries.len())
     } else {
-        format!("{filtered_count}/{} checkouts", open.entries.len())
+        format!("{filtered_count}/{} 个检出", open.entries.len())
     };
     let mut spans = vec![Span::styled(" / ", focus_style)];
     if open.query.trim().is_empty() {
         spans.push(Span::styled(
-            "filter worktrees",
+            "筛选工作树",
             Style::default().fg(app.palette.overlay0),
         ));
     } else {
@@ -639,25 +637,25 @@ fn confirm_close_overlay_text(
     };
 
     let pane_text = if pane_count == 1 {
-        "1 pane".to_string()
+        "1 个窗格".to_string()
     } else {
-        format!("{pane_count} panes")
+        format!("{pane_count} 个窗格")
     };
     let workspace_text = if closes_group {
         let count = group_member_indices.len();
         if count == 1 {
-            "1 workspace, ".to_string()
+            "1 个工作区，".to_string()
         } else {
-            format!("{count} workspaces, ")
+            format!("{count} 个工作区，")
         }
     } else {
         String::new()
     };
 
     let title = if closes_group {
-        "Close worktree group?"
+        "关闭工作树组？"
     } else {
-        "Close workspace?"
+        "关闭工作区？"
     };
     let detail = format!("{ws_name} — {workspace_text}{pane_text}");
     (title.to_string(), detail)
@@ -722,7 +720,7 @@ pub(super) fn render_confirm_close_overlay(
             frame,
             confirm_rect,
             Some("↵"),
-            "confirm",
+            "确认",
             Style::default()
                 .fg(panel_contrast_fg(&app.palette))
                 .bg(app.palette.red)
@@ -732,7 +730,7 @@ pub(super) fn render_confirm_close_overlay(
             frame,
             cancel_rect,
             Some("esc"),
-            "cancel",
+            "取消",
             Style::default()
                 .fg(app.palette.text)
                 .bg(app.palette.surface0)
@@ -751,11 +749,11 @@ pub(crate) fn confirm_close_button_rects(inner: Rect) -> (Rect, Rect) {
         &[
             ActionButtonSpec {
                 hint: Some("↵"),
-                label: "confirm",
+                label: "确认",
             },
             ActionButtonSpec {
                 hint: Some("esc"),
-                label: "cancel",
+                label: "取消",
             },
         ],
         2,
@@ -792,8 +790,8 @@ mod tests {
         let terminal_runtimes = crate::terminal::TerminalRuntimeRegistry::new();
         let (title, detail) = confirm_close_overlay_text(&app, &terminal_runtimes);
 
-        assert_eq!(title, "Close workspace?");
-        assert_eq!(detail, "current — 1 pane");
+        assert_eq!(title, "关闭工作区？");
+        assert_eq!(detail, "current — 1 个窗格");
     }
 
     #[cfg(unix)]
@@ -840,7 +838,7 @@ mod tests {
 
         let (_, detail) = confirm_close_overlay_text(&app, &terminal_runtimes);
 
-        assert_eq!(detail, "current — 1 pane");
+        assert_eq!(detail, "current — 1 个窗格");
 
         drop(terminal_runtimes);
         std::fs::remove_dir_all(root).unwrap();
@@ -864,7 +862,7 @@ mod tests {
         let terminal_runtimes = crate::terminal::TerminalRuntimeRegistry::new();
         let (_, detail) = confirm_close_overlay_text(&app, &terminal_runtimes);
 
-        assert_eq!(detail, "selected — 1 pane");
+        assert_eq!(detail, "selected — 1 个窗格");
     }
 
     #[test]
@@ -892,8 +890,8 @@ mod tests {
         let terminal_runtimes = crate::terminal::TerminalRuntimeRegistry::new();
         let (title, detail) = confirm_close_overlay_text(&app, &terminal_runtimes);
 
-        assert_eq!(title, "Close worktree group?");
-        assert_eq!(detail, "main — 2 workspaces, 2 panes");
+        assert_eq!(title, "关闭工作树组？");
+        assert_eq!(detail, "main — 2 个工作区，2 个窗格");
     }
 
     #[test]

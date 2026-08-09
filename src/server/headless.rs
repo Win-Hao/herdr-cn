@@ -1898,9 +1898,9 @@ impl HeadlessServer {
             return;
         };
         let event_text = match kind {
-            crate::app::state::ToastKind::NeedsAttention => "needs attention",
-            crate::app::state::ToastKind::Finished => "finished",
-            crate::app::state::ToastKind::UpdateInstalled => "updated",
+            crate::app::state::ToastKind::NeedsAttention => "待响应",
+            crate::app::state::ToastKind::Finished => "完成",
+            crate::app::state::ToastKind::UpdateInstalled => "已更新",
         };
         let workspace_label =
             ws.display_name_from(&self.app.state.terminals, &self.app.terminal_runtimes);
@@ -3607,9 +3607,9 @@ impl HeadlessServer {
                         .and_then(|terminal| terminal.effective_agent_label())
                     {
                         let event_text = match kind {
-                            crate::app::state::ToastKind::NeedsAttention => "needs attention",
-                            crate::app::state::ToastKind::Finished => "finished",
-                            crate::app::state::ToastKind::UpdateInstalled => "updated",
+                            crate::app::state::ToastKind::NeedsAttention => "待响应",
+                            crate::app::state::ToastKind::Finished => "完成",
+                            crate::app::state::ToastKind::UpdateInstalled => "已更新",
                         };
                         let workspace_label = self.app.state.workspaces[*ws_idx].display_name_from(
                             &self.app.state.terminals,
@@ -9545,7 +9545,7 @@ next_tab = ""
                 .copy_feedback
                 .as_ref()
                 .map(|feedback| feedback.message.as_str()),
-            Some("copied to clipboard")
+            Some("已复制到剪贴板")
         );
         match read_server_message(
             foreground_control_rx
@@ -10343,7 +10343,7 @@ next_tab = ""
                 body,
             } => {
                 assert_eq!(kind, protocol::NotifyKind::SystemToast);
-                assert_eq!(message, "pi needs attention");
+                assert_eq!(message, "pi 待响应");
                 assert_eq!(body.as_deref(), Some("background · 1"));
             }
             other => panic!("expected delayed system toast, got {other:?}"),
@@ -10431,7 +10431,7 @@ next_tab = ""
                 body,
             } => {
                 assert_eq!(kind, protocol::NotifyKind::SystemToast);
-                assert_eq!(message, "pi needs attention");
+                assert_eq!(message, "pi 待响应");
                 assert_eq!(body.as_deref(), Some("active · 1"));
             }
             other => panic!("expected delayed system toast, got {other:?}"),

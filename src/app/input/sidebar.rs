@@ -1,4 +1,5 @@
 use ratatui::layout::Rect;
+use unicode_width::UnicodeWidthStr;
 
 use crate::app::state::{AppState, ViewLayout};
 
@@ -197,13 +198,13 @@ impl AppState {
     }
 
     pub(crate) fn global_menu_labels(&self) -> Vec<&'static str> {
-        let mut labels = vec!["settings", "keybinds", "reload config"];
+        let mut labels = vec!["设置", "快捷键", "重新加载配置"];
         if self.update_available.is_some() {
-            labels.push("update ready");
+            labels.push("更新就绪");
         } else if self.latest_release_notes_available {
-            labels.push("what's new");
+            labels.push("更新内容");
         }
-        labels.push("detach");
+        labels.push("分离");
         labels
     }
 
@@ -219,7 +220,7 @@ impl AppState {
                 } else {
                     0
                 };
-                label.chars().count() as u16 + badge_width
+                UnicodeWidthStr::width(*label) as u16 + badge_width
             })
             .max()
             .unwrap_or(8)
@@ -642,13 +643,7 @@ mod tests {
 
         assert_eq!(
             app.state.global_menu_labels(),
-            vec![
-                "settings",
-                "keybinds",
-                "reload config",
-                "update ready",
-                "detach"
-            ]
+            vec!["设置", "快捷键", "重新加载配置", "更新就绪", "分离"]
         );
         assert!(!app.state.should_quit);
     }
@@ -667,7 +662,7 @@ mod tests {
 
         assert_eq!(
             app.state.global_menu_labels(),
-            vec!["settings", "keybinds", "reload config", "detach"]
+            vec!["设置", "快捷键", "重新加载配置", "分离"]
         );
 
         let menu = app.state.global_menu_rect();
@@ -689,13 +684,7 @@ mod tests {
 
         assert_eq!(
             app.state.global_menu_labels(),
-            vec![
-                "settings",
-                "keybinds",
-                "reload config",
-                "what's new",
-                "detach"
-            ]
+            vec!["设置", "快捷键", "重新加载配置", "更新内容", "分离"]
         );
     }
 

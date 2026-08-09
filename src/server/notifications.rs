@@ -58,9 +58,9 @@ pub(crate) fn toast_message_from_state_change(
 
 fn toast_event_text(kind: app::state::ToastKind) -> &'static str {
     match kind {
-        app::state::ToastKind::NeedsAttention => "needs attention",
-        app::state::ToastKind::Finished => "finished",
-        app::state::ToastKind::UpdateInstalled => "updated",
+        app::state::ToastKind::NeedsAttention => "待响应",
+        app::state::ToastKind::Finished => "完成",
+        app::state::ToastKind::UpdateInstalled => "已更新",
     }
 }
 
@@ -147,7 +147,7 @@ mod tests {
 
         assert_eq!(
             message.as_deref(),
-            Some("codex finished: __herdr_projects__ · 1")
+            Some("codex 完成: __herdr_projects__ · 1")
         );
 
         for (_, runtime) in terminal_runtimes.drain() {

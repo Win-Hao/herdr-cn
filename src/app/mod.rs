@@ -1218,8 +1218,7 @@ impl App {
         self.state.release_notes = None;
         if !preview {
             if let Err(err) = crate::release_notes::mark_current_version_seen() {
-                self.state.config_diagnostic =
-                    Some(format!("failed to update release notes status: {err}"));
+                self.state.config_diagnostic = Some(format!("更新发行说明状态失败：{err}"));
                 self.config_diagnostic_deadline = Some(Instant::now() + Duration::from_secs(5));
             }
         }
@@ -1241,8 +1240,7 @@ impl App {
                 if let Err(err) =
                     crate::product_announcements::mark_seen(&announcement.version, &announcement.id)
                 {
-                    self.state.config_diagnostic =
-                        Some(format!("failed to update announcement status: {err}"));
+                    self.state.config_diagnostic = Some(format!("更新公告状态失败：{err}"));
                     self.config_diagnostic_deadline = Some(Instant::now() + Duration::from_secs(5));
                 }
             }
@@ -1302,7 +1300,7 @@ impl App {
         if targets.is_empty() {
             self.state
                 .integration_install_messages
-                .push("all detected integrations are current".to_string());
+                .push("所有已检测到的集成均为最新".to_string());
             return;
         }
 
@@ -1312,7 +1310,7 @@ impl App {
                 Ok(messages) => {
                     self.state
                         .integration_install_messages
-                        .push(format!("installed {label}"));
+                        .push(format!("已安装 {label}"));
                     self.state
                         .integration_install_messages
                         .extend(messages.into_iter().filter(|message| {
@@ -1391,7 +1389,7 @@ impl App {
                     diagnostics.extend(
                         keybind_diagnostics
                             .into_iter()
-                            .map(|diagnostic| format!("{diagnostic}; kept current keybinds")),
+                            .map(|diagnostic| format!("{diagnostic}；已保留当前按键绑定")),
                     );
                 }
             }
@@ -1403,7 +1401,7 @@ impl App {
             // the previous settings and skip the section so the re-clamp below
             // — and every subsequent render/drag — can never panic.
             if let Some(diagnostic) = config.invalid_sidebar_bounds_diagnostic() {
-                diagnostics.push(format!("{diagnostic}; keeping previous [ui] settings"));
+                diagnostics.push(format!("{diagnostic}；已保留原有 [ui] 设置"));
             } else {
                 diagnostics.extend(config.ui.sound.diagnostics());
 
@@ -1547,8 +1545,8 @@ impl App {
             if notify_success {
                 self.state.toast = Some(crate::app::state::ToastNotification {
                     kind: crate::app::state::ToastKind::UpdateInstalled,
-                    title: "reloaded config".to_string(),
-                    context: "using config.toml".to_string(),
+                    title: "已重载配置".to_string(),
+                    context: "使用 config.toml".to_string(),
                     position: None,
                     target: None,
                 });
@@ -1559,8 +1557,8 @@ impl App {
             if notify_success {
                 self.state.toast = Some(crate::app::state::ToastNotification {
                     kind: crate::app::state::ToastKind::UpdateInstalled,
-                    title: "reloaded config".to_string(),
-                    context: "with warnings".to_string(),
+                    title: "已重载配置".to_string(),
+                    context: "存在警告".to_string(),
                     position: None,
                     target: None,
                 });
@@ -2336,7 +2334,7 @@ mod tests {
 
         assert!(app.state.toast.is_none());
         let feedback = app.state.copy_feedback.as_ref().expect("copy feedback");
-        assert_eq!(feedback.message, "copied to clipboard");
+        assert_eq!(feedback.message, "已复制到剪贴板");
         assert!(app.copy_feedback_deadline.is_some());
     }
 
@@ -2375,7 +2373,7 @@ mod tests {
                 .copy_feedback
                 .as_ref()
                 .map(|feedback| feedback.message.as_str()),
-            Some("copied to clipboard")
+            Some("已复制到剪贴板")
         );
     }
 
@@ -2949,8 +2947,8 @@ mod tests {
         assert!(app.state.config_diagnostic.is_none());
         let toast = app.state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, crate::app::state::ToastKind::UpdateInstalled);
-        assert_eq!(toast.title, "reloaded config");
-        assert_eq!(toast.context, "using config.toml");
+        assert_eq!(toast.title, "已重载配置");
+        assert_eq!(toast.context, "使用 config.toml");
 
         std::env::remove_var(crate::config::CONFIG_PATH_ENV_VAR);
         let _ = std::fs::remove_dir_all(path.parent().unwrap());

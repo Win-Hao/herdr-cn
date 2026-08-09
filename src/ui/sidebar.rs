@@ -80,8 +80,8 @@ pub(crate) fn sidebar_section_divider_rect(area: Rect, split_ratio: f32) -> Rect
 
 fn agent_panel_sort_label(sort: AgentPanelSort) -> &'static str {
     match sort {
-        AgentPanelSort::Spaces => "grouped",
-        AgentPanelSort::Priority => "priority",
+        AgentPanelSort::Spaces => "分组",
+        AgentPanelSort::Priority => "优先级",
     }
 }
 
@@ -106,7 +106,7 @@ fn agent_panel_header_label_rect(area: Rect, label: &str) -> Rect {
 fn active_agent_view_label(app: &AppState) -> Option<&str> {
     app.agent_view_override
         .as_ref()
-        .map(|view| view.label.as_deref().unwrap_or("filtered"))
+        .map(|view| view.label.as_deref().unwrap_or("已筛选"))
 }
 
 pub(crate) fn agent_panel_entries(app: &AppState) -> Vec<AgentPanelEntry> {
@@ -1204,7 +1204,7 @@ fn render_workspace_list(
     if area.height > 0 {
         frame.render_widget(
             Paragraph::new(Line::from(vec![Span::styled(
-                " spaces",
+                " 工作区",
                 Style::default().fg(p.overlay0).add_modifier(Modifier::BOLD),
             )])),
             Rect::new(area.x, area.y, area.width, 1),
@@ -1378,7 +1378,7 @@ fn render_workspace_list(
     if app.mouse_capture && list_bottom > area.y {
         let new_rect = app.sidebar_new_button_rect();
         frame.render_widget(
-            Paragraph::new(Span::styled(" new", Style::default().fg(p.overlay0))),
+            Paragraph::new(Span::styled(" 新建", Style::default().fg(p.overlay0))),
             new_rect,
         );
 
@@ -1389,10 +1389,10 @@ fn render_workspace_list(
                     "● ",
                     Style::default().fg(p.accent).add_modifier(Modifier::BOLD),
                 ),
-                Span::styled("menu", Style::default().fg(p.overlay0)),
+                Span::styled("菜单", Style::default().fg(p.overlay0)),
             ])
         } else {
-            Line::from(vec![Span::styled("menu", Style::default().fg(p.overlay0))])
+            Line::from(vec![Span::styled("菜单", Style::default().fg(p.overlay0))])
         };
         frame.render_widget(
             Paragraph::new(menu_line).alignment(Alignment::Right),
@@ -1421,7 +1421,7 @@ fn render_agent_detail(
 
     frame.render_widget(
         Paragraph::new(Line::from(vec![Span::styled(
-            " agents",
+            " Agent",
             Style::default().fg(p.overlay0).add_modifier(Modifier::BOLD),
         )])),
         Rect::new(area.x, area.y + 1, area.width, 1),
@@ -1454,7 +1454,7 @@ fn render_agent_detail(
     }
     if details.is_empty() && app.agent_view_override.is_some() {
         frame.render_widget(
-            Paragraph::new(" no matching agents")
+            Paragraph::new(" 无匹配的 Agent")
                 .style(Style::default().fg(p.overlay0).add_modifier(Modifier::DIM)),
             Rect::new(body.x, body.y, body.width, 1),
         );
@@ -1619,8 +1619,8 @@ mod tests {
         let second = row_text(buffer, body.y + 1, 25);
         assert!(first.contains("one"));
         assert_eq!(second, "   pi");
-        assert!(!first.contains("working"));
-        assert!(!second.contains("working"));
+        assert!(!first.replace(' ', "").contains("运行中"));
+        assert!(!second.replace(' ', "").contains("运行中"));
 
         let workspace_x = find_symbol_x(buffer, body.y, body.width, "o");
         let workspace_style = buffer[(workspace_x, body.y)].style();

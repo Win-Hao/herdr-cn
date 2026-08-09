@@ -289,7 +289,7 @@ pub(crate) fn render_mobile_panel(
 
     let areas = mobile_switcher_areas(app);
     frame.render_widget(
-        Paragraph::new(" switch").style(
+        Paragraph::new(" 切换").style(
             Style::default()
                 .fg(p.text)
                 .bg(p.panel_bg)
@@ -321,7 +321,7 @@ fn render_header_status(
     }
     let p = &app.palette;
     let Some(ws) = app.active.and_then(|idx| app.workspaces.get(idx)) else {
-        frame.render_widget(Paragraph::new(" no workspace"), area);
+        frame.render_widget(Paragraph::new(" 无工作区"), area);
         return;
     };
 
@@ -372,9 +372,13 @@ fn mobile_tab_status(ws: &crate::workspace::Workspace) -> String {
         .tab_display_name(ws.active_tab)
         .unwrap_or_else(|| (ws.active_tab + 1).to_string());
     if ws.tabs.len() <= 1 {
-        format!("tab {tab_label}")
+        format!("标签页 {tab_label}")
     } else {
-        format!("tab {tab_label} · {}/{}", ws.active_tab + 1, ws.tabs.len())
+        format!(
+            "标签页 {tab_label} · {}/{}",
+            ws.active_tab + 1,
+            ws.tabs.len()
+        )
     }
 }
 
@@ -391,7 +395,7 @@ fn render_switch_button(app: &AppState, frame: &mut Frame, area: Rect) {
     }
     let label_y = if area.height > 1 { area.y + 1 } else { area.y };
     frame.render_widget(
-        Paragraph::new("switch")
+        Paragraph::new("切换")
             .style(
                 Style::default()
                     .fg(p.text)
@@ -424,7 +428,7 @@ fn render_close_button(app: &AppState, frame: &mut Frame, area: Rect) {
             .set_style(Style::default().fg(p.surface_dim).bg(p.surface0));
     }
     frame.render_widget(
-        Paragraph::new("close")
+        Paragraph::new("关闭")
             .style(
                 Style::default()
                     .fg(p.overlay1)
@@ -500,8 +504,8 @@ fn render_mobile_switcher_content(
         let title = app
             .agent_view_override
             .as_ref()
-            .map(|view| format!("agents · {}", view.label.as_deref().unwrap_or("filtered")))
-            .unwrap_or_else(|| "agents".to_string());
+            .map(|view| format!("Agent · {}", view.label.as_deref().unwrap_or("已筛选")))
+            .unwrap_or_else(|| "Agent".to_string());
         render_section_title_at(
             frame,
             viewport,
@@ -521,7 +525,7 @@ fn render_mobile_switcher_content(
                 app.mobile_switcher_scroll,
                 ratatui::style::Color::Reset,
                 Line::from(Span::styled(
-                    "  no matching agents",
+                    "  无匹配的 Agent",
                     Style::default().fg(p.overlay0).add_modifier(Modifier::DIM),
                 )),
             );
@@ -570,7 +574,7 @@ fn render_mobile_switcher_content(
         content,
         doc_y,
         app.mobile_switcher_scroll,
-        "spaces",
+        "工作区",
         p,
     );
     doc_y += 1;
@@ -580,7 +584,7 @@ fn render_mobile_switcher_content(
         content,
         doc_y,
         app.mobile_switcher_scroll,
-        "+ new workspace",
+        "+ 新建工作区",
         p,
     );
     doc_y += 1;
@@ -663,7 +667,7 @@ fn render_mobile_switcher_content(
             content,
             doc_y,
             app.mobile_switcher_scroll,
-            "tabs",
+            "标签页",
             p,
         );
         doc_y += 1;
@@ -673,7 +677,7 @@ fn render_mobile_switcher_content(
             content,
             doc_y,
             app.mobile_switcher_scroll,
-            "+ new tab",
+            "+ 新建标签页",
             p,
         );
         doc_y += 1;
@@ -684,7 +688,7 @@ fn render_mobile_switcher_content(
                 .tab_display_name(idx)
                 .unwrap_or_else(|| (idx + 1).to_string());
             let label = if tab.is_auto_named() {
-                format!("tab {display_name}")
+                format!("标签页 {display_name}")
             } else {
                 format!("{} · {display_name}", idx + 1)
             };
@@ -717,7 +721,7 @@ fn render_mobile_switcher_content(
         content,
         doc_y,
         app.mobile_switcher_scroll,
-        "menu",
+        "菜单",
         p,
     );
     doc_y += 1;
@@ -1012,26 +1016,23 @@ enum SummaryTone {
 /// (blocked → done → working → idle). Pure so it can be unit-tested.
 fn agent_summary_segments(counts: GlobalAgentCounts) -> Vec<(String, SummaryTone)> {
     if counts.total() == 0 {
-        return vec![("no agents".to_string(), SummaryTone::Muted)];
+        return vec![("无 Agent".to_string(), SummaryTone::Muted)];
     }
     if !counts.any_pending() {
-        return vec![("all idle".to_string(), SummaryTone::Muted)];
+        return vec![("全部空闲".to_string(), SummaryTone::Muted)];
     }
     let mut segments = Vec::new();
     if counts.blocked > 0 {
-        segments.push((
-            format!("◉ {} blocked", counts.blocked),
-            SummaryTone::Blocked,
-        ));
+        segments.push((format!("◉ {} 待响应", counts.blocked), SummaryTone::Blocked));
     }
     if counts.done > 0 {
-        segments.push((format!("● {} done", counts.done), SummaryTone::Done));
+        segments.push((format!("● {} 完成", counts.done), SummaryTone::Done));
     }
     if counts.working > 0 {
-        segments.push((format!("{} working", counts.working), SummaryTone::Working));
+        segments.push((format!("{} 运行中", counts.working), SummaryTone::Working));
     }
     if counts.idle > 0 {
-        segments.push((format!("{} idle", counts.idle), SummaryTone::Idle));
+        segments.push((format!("{} 空闲", counts.idle), SummaryTone::Idle));
     }
     segments
 }
@@ -1108,14 +1109,14 @@ fn mobile_toast_title(toast: &ToastNotification) -> String {
         ToastKind::NeedsAttention => toast
             .title
             .strip_suffix(" needs attention")
-            .map(|agent| format!("{agent} waiting"))
+            .map(|agent| format!("{agent} 待响应"))
             .unwrap_or_else(|| toast.title.clone()),
         ToastKind::Finished => toast
             .title
             .strip_suffix(" finished")
-            .map(|agent| format!("{agent} done"))
+            .map(|agent| format!("{agent} 完成"))
             .unwrap_or_else(|| toast.title.clone()),
-        ToastKind::UpdateInstalled => "update ready".to_string(),
+        ToastKind::UpdateInstalled => "更新就绪".to_string(),
     }
 }
 
@@ -1213,10 +1214,7 @@ mod tests {
         };
         let segments = agent_summary_segments(counts);
         let labels: Vec<&str> = segments.iter().map(|(text, _)| text.as_str()).collect();
-        assert_eq!(
-            labels,
-            vec!["◉ 2 blocked", "● 1 done", "2 working", "1 idle"]
-        );
+        assert_eq!(labels, vec!["◉ 2 待响应", "● 1 完成", "2 运行中", "1 空闲"]);
         assert_eq!(segments[0].1, SummaryTone::Blocked);
     }
 
@@ -1231,10 +1229,7 @@ mod tests {
             .into_iter()
             .map(|(text, _)| text)
             .collect();
-        assert_eq!(
-            labels,
-            vec!["● 1 done".to_string(), "2 working".to_string()]
-        );
+        assert_eq!(labels, vec!["● 1 完成".to_string(), "2 运行中".to_string()]);
     }
 
     #[test]
@@ -1245,7 +1240,7 @@ mod tests {
         };
         assert_eq!(
             agent_summary_segments(counts),
-            vec![("all idle".to_string(), SummaryTone::Muted)]
+            vec![("全部空闲".to_string(), SummaryTone::Muted)]
         );
     }
 
@@ -1259,7 +1254,7 @@ mod tests {
         };
         let (shown, truncated) = fit_summary_segments(agent_summary_segments(counts), 24);
         let labels: Vec<&str> = shown.iter().map(|(text, _)| text.as_str()).collect();
-        assert_eq!(labels, vec!["◉ 2 blocked", "● 1 done"]);
+        assert_eq!(labels, vec!["◉ 2 待响应", "● 1 完成"]);
         assert!(truncated);
     }
 
@@ -1280,7 +1275,7 @@ mod tests {
     fn agent_summary_reports_no_agents_when_empty() {
         assert_eq!(
             agent_summary_segments(GlobalAgentCounts::default()),
-            vec![("no agents".to_string(), SummaryTone::Muted)]
+            vec![("无 Agent".to_string(), SummaryTone::Muted)]
         );
     }
 
@@ -1376,14 +1371,14 @@ mod tests {
     fn mobile_agent_detail_includes_tab_context_when_available() {
         let entry = agent_entry(Some("mobile-state"), Some("pi"));
 
-        assert_eq!(mobile_agent_detail(&entry), "  mobile-state · idle · pi");
+        assert_eq!(mobile_agent_detail(&entry), "  mobile-state · 空闲 · pi");
     }
 
     #[test]
     fn mobile_agent_detail_keeps_existing_compact_detail_without_tab_context() {
         let entry = agent_entry(None, Some("pi"));
 
-        assert_eq!(mobile_agent_detail(&entry), "  idle · pi");
+        assert_eq!(mobile_agent_detail(&entry), "  空闲 · pi");
     }
 
     #[test]
@@ -1394,7 +1389,7 @@ mod tests {
         assert!(workspace.close_tab(removed_tab));
         workspace.active_tab = 1;
 
-        assert_eq!(mobile_tab_status(&workspace), "tab 2 · 2/2");
+        assert_eq!(mobile_tab_status(&workspace), "标签页 2 · 2/2");
     }
 
     #[test]
@@ -1428,8 +1423,11 @@ mod tests {
             .map(|x| terminal.backend().buffer()[(x, 10)].symbol())
             .collect::<String>();
 
-        assert!(row.contains("tab 2"), "mobile tab row: {row:?}");
-        assert!(!row.contains("tab 3"), "mobile tab row: {row:?}");
+        // Wide glyphs reserve a blank continuation cell, so read the row back
+        // with spaces stripped instead of matching the on-screen spacing.
+        let compact = row.replace(' ', "");
+        assert!(compact.contains("标签页2"), "mobile tab row: {row:?}");
+        assert!(!compact.contains("标签页3"), "mobile tab row: {row:?}");
     }
 
     #[cfg(unix)]

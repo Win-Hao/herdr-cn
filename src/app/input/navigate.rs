@@ -804,7 +804,7 @@ impl App {
             Err(err) => {
                 self.state.toast = Some(crate::app::state::ToastNotification {
                     kind: crate::app::state::ToastKind::NeedsAttention,
-                    title: "custom command failed".to_string(),
+                    title: "自定义命令失败".to_string(),
                     context: err.to_string(),
                     position: None,
                     target: None,
@@ -900,7 +900,7 @@ impl App {
             Err(err) => {
                 self.state.toast = Some(crate::app::state::ToastNotification {
                     kind: crate::app::state::ToastKind::NeedsAttention,
-                    title: "edit scrollback failed".to_string(),
+                    title: "编辑滚动历史失败".to_string(),
                     context: err.to_string(),
                     position: None,
                     target: None,
@@ -914,19 +914,19 @@ impl App {
         let ws_idx = self
             .state
             .active
-            .ok_or_else(|| std::io::Error::other("no active workspace"))?;
+            .ok_or_else(|| std::io::Error::other("没有活动的工作区"))?;
         let ws = self
             .state
             .workspaces
             .get(ws_idx)
-            .ok_or_else(|| std::io::Error::other("active workspace disappeared"))?;
+            .ok_or_else(|| std::io::Error::other("活动工作区已消失"))?;
         let pane_id = ws
             .focused_pane_id()
-            .ok_or_else(|| std::io::Error::other("no focused pane"))?;
+            .ok_or_else(|| std::io::Error::other("没有聚焦的窗格"))?;
         let scrollback = self
             .state
             .runtime_for_pane_in_workspace(&self.terminal_runtimes, ws_idx, pane_id)
-            .ok_or_else(|| std::io::Error::other("focused pane has no scrollback runtime"))?
+            .ok_or_else(|| std::io::Error::other("聚焦的窗格没有滚动历史运行时"))?
             .recent_text(usize::MAX);
 
         let path = write_scrollback_temp_file(&scrollback)?;
@@ -956,8 +956,8 @@ impl App {
         if let Some(public_pane_id) = self.public_pane_id(ws_idx, pane_id) {
             self.state.toast = Some(crate::app::state::ToastNotification {
                 kind: crate::app::state::ToastKind::Finished,
-                title: "opened scrollback".to_string(),
-                context: format!("focused pane {public_pane_id}"),
+                title: "已打开滚动历史".to_string(),
+                context: format!("已聚焦窗格 {public_pane_id}"),
                 position: None,
                 target: None,
             });
@@ -971,7 +971,7 @@ impl App {
         temp_files: Vec<std::path::PathBuf>,
     ) -> std::io::Result<()> {
         let Some(ws_idx) = self.state.active else {
-            return Err(std::io::Error::other("no active workspace"));
+            return Err(std::io::Error::other("没有活动的工作区"));
         };
         let previous_focus_target = self.state.current_pane_focus_target();
         let (rows, cols) = self.state.estimate_pane_size();
@@ -983,11 +983,11 @@ impl App {
             .state
             .workspaces
             .get_mut(ws_idx)
-            .ok_or_else(|| std::io::Error::other("active workspace disappeared"))?;
+            .ok_or_else(|| std::io::Error::other("活动工作区已消失"))?;
         let tab_idx = ws.active_tab_index();
         let previous_focus = ws
             .focused_pane_id()
-            .ok_or_else(|| std::io::Error::other("no focused pane"))?;
+            .ok_or_else(|| std::io::Error::other("没有聚焦的窗格"))?;
         let previous_zoomed = ws.active_tab().map(|tab| tab.zoomed).unwrap_or(false);
         let cwd = ws.active_tab().and_then(|tab| {
             tab.cwd_for_pane(
@@ -1050,7 +1050,7 @@ impl App {
         temp_files: Vec<std::path::PathBuf>,
     ) -> std::io::Result<(usize, crate::workspace::NewPane)> {
         let Some(ws_idx) = self.state.active else {
-            return Err(std::io::Error::other("no active workspace"));
+            return Err(std::io::Error::other("没有活动的工作区"));
         };
         let previous_focus_target = self.state.current_pane_focus_target();
         let (rows, cols) = self.state.estimate_pane_size();
@@ -1061,10 +1061,10 @@ impl App {
             .state
             .workspaces
             .get(ws_idx)
-            .ok_or_else(|| std::io::Error::other("active workspace disappeared"))?;
+            .ok_or_else(|| std::io::Error::other("活动工作区已消失"))?;
         let previous_focus = ws
             .focused_pane_id()
-            .ok_or_else(|| std::io::Error::other("no focused pane"))?;
+            .ok_or_else(|| std::io::Error::other("没有聚焦的窗格"))?;
         let cwd = cwd.or_else(|| {
             ws.active_tab().and_then(|tab| {
                 tab.cwd_for_pane(
@@ -1080,7 +1080,7 @@ impl App {
                 .state
                 .workspaces
                 .get_mut(ws_idx)
-                .ok_or_else(|| std::io::Error::other("active workspace disappeared"))?;
+                .ok_or_else(|| std::io::Error::other("活动工作区已消失"))?;
             let previous_zoomed = ws.active_tab().map(|tab| tab.zoomed).unwrap_or(false);
             let result = ws.split_pane_argv_command(
                 previous_focus,
@@ -1098,11 +1098,11 @@ impl App {
             let (tab_idx, new_pane) = match result {
                 Some(Ok(result)) => result,
                 Some(Err(err)) => return Err(err),
-                None => return Err(std::io::Error::other("focused pane disappeared")),
+                None => return Err(std::io::Error::other("聚焦的窗格已消失")),
             };
             ws.tabs
                 .get_mut(tab_idx)
-                .ok_or_else(|| std::io::Error::other("plugin overlay tab disappeared"))?
+                .ok_or_else(|| std::io::Error::other("插件浮层标签页已消失"))?
                 .zoomed = true;
             self.overlay_panes.insert(
                 new_pane.pane_id,

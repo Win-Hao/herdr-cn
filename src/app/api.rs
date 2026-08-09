@@ -435,7 +435,7 @@ impl App {
             return;
         }
         self.state.copy_feedback = Some(crate::app::state::CopyFeedback {
-            message: "copied to clipboard".to_string(),
+            message: "已复制到剪贴板".to_string(),
         });
         self.copy_feedback_deadline = Some(Instant::now() + super::COPY_FEEDBACK_DURATION);
     }
@@ -678,9 +678,9 @@ impl App {
                 continue;
             };
             let event_text = match kind {
-                ToastKind::NeedsAttention => "needs attention",
-                ToastKind::Finished => "finished",
-                ToastKind::UpdateInstalled => "updated",
+                ToastKind::NeedsAttention => "待响应",
+                ToastKind::Finished => "完成",
+                ToastKind::UpdateInstalled => "已更新",
             };
             let workspace_label =
                 ws.display_name_from(&self.state.terminals, &self.terminal_runtimes);

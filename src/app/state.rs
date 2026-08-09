@@ -668,13 +668,13 @@ impl WorktreeOpenEntry {
 
     pub(crate) fn status_label(&self) -> &'static str {
         if self.already_open_ws_idx.is_some() {
-            "open"
+            "已打开"
         } else if self.branch.is_some() {
             ""
         } else if self.is_linked_worktree {
-            "detached"
+            "分离"
         } else {
-            "root"
+            "主仓库"
         }
     }
 
@@ -1008,11 +1008,11 @@ impl SettingsSection {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::Theme => "theme",
-            Self::Sound => "sound",
-            Self::Toast => "toasts",
-            Self::PaneLabels => "pane labels",
-            Self::Integrations => "integrations",
+            Self::Theme => "主题",
+            Self::Sound => "声音",
+            Self::Toast => "通知",
+            Self::PaneLabels => "窗格标签",
+            Self::Integrations => "集成",
         }
     }
 }
@@ -1210,89 +1210,71 @@ pub struct ContextMenuState {
 impl ContextMenuState {
     pub fn items(&self) -> &'static [&'static str] {
         match self.kind {
-            ContextMenuKind::Workspace { .. } => &["Rename", "Close"],
+            ContextMenuKind::Workspace { .. } => &["重命名", "关闭"],
             ContextMenuKind::GitWorkspace {
                 is_linked_worktree: false,
                 has_worktree_children: false,
                 ..
-            } => &["Rename", "Close", "New worktree", "Open worktree..."],
+            } => &["重命名", "关闭", "新建工作树", "打开工作树..."],
             ContextMenuKind::GitWorkspace {
                 is_linked_worktree: true,
                 ..
-            } => &["Rename", "Close", "Delete worktree checkout..."],
+            } => &["重命名", "关闭", "删除工作树检出..."],
             ContextMenuKind::GitWorkspace {
                 is_linked_worktree: false,
                 has_worktree_children: true,
                 collapsed: true,
                 ..
-            } => &[
-                "Rename",
-                "Close group",
-                "New worktree",
-                "Open worktree...",
-                "Expand",
-            ],
+            } => &["重命名", "关闭分组", "新建工作树", "打开工作树...", "展开"],
             ContextMenuKind::GitWorkspace {
                 is_linked_worktree: false,
                 has_worktree_children: true,
                 collapsed: false,
                 ..
-            } => &[
-                "Rename",
-                "Close group",
-                "New worktree",
-                "Open worktree...",
-                "Collapse",
-            ],
-            ContextMenuKind::Tab { .. } => &["New tab", "Rename", "Close"],
+            } => &["重命名", "关闭分组", "新建工作树", "打开工作树...", "折叠"],
+            ContextMenuKind::Tab { .. } => &["新建标签页", "重命名", "关闭"],
             ContextMenuKind::Pane {
                 has_manual_label: true,
                 source_pane_id: Some(_),
                 ..
             } => &[
-                "Rename pane",
-                "Clear pane name",
-                "Swap with focused pane",
-                "Split right",
-                "Split down",
-                "Zoom",
-                "Close pane",
+                "重命名窗格",
+                "清除窗格名称",
+                "与聚焦窗格交换",
+                "向右分割",
+                "向下分割",
+                "缩放",
+                "关闭窗格",
             ],
             ContextMenuKind::Pane {
                 has_manual_label: false,
                 source_pane_id: Some(_),
                 ..
             } => &[
-                "Rename pane",
-                "Swap with focused pane",
-                "Split right",
-                "Split down",
-                "Zoom",
-                "Close pane",
+                "重命名窗格",
+                "与聚焦窗格交换",
+                "向右分割",
+                "向下分割",
+                "缩放",
+                "关闭窗格",
             ],
             ContextMenuKind::Pane {
                 has_manual_label: true,
                 source_pane_id: None,
                 ..
             } => &[
-                "Rename pane",
-                "Clear pane name",
-                "Split right",
-                "Split down",
-                "Zoom",
-                "Close pane",
+                "重命名窗格",
+                "清除窗格名称",
+                "向右分割",
+                "向下分割",
+                "缩放",
+                "关闭窗格",
             ],
             ContextMenuKind::Pane {
                 has_manual_label: false,
                 source_pane_id: None,
                 ..
-            } => &[
-                "Rename pane",
-                "Split right",
-                "Split down",
-                "Zoom",
-                "Close pane",
-            ],
+            } => &["重命名窗格", "向右分割", "向下分割", "缩放", "关闭窗格"],
         }
     }
 }
@@ -1617,8 +1599,8 @@ impl AppState {
     }
 
     pub(crate) fn global_menu_item_has_badge(&self, item: &str) -> bool {
-        (item == "update ready" && self.update_available.is_some())
-            || (item == "settings" && self.integration_updates_available())
+        (item == "更新就绪" && self.update_available.is_some())
+            || (item == "设置" && self.integration_updates_available())
     }
 
     pub(crate) fn settings_section_has_badge(&self, section: SettingsSection) -> bool {
@@ -2443,10 +2425,7 @@ mod tests {
             list: MenuListState::new(0),
         };
 
-        assert_eq!(
-            menu.items(),
-            &["Rename", "Close", "Delete worktree checkout..."]
-        );
+        assert_eq!(menu.items(), &["重命名", "关闭", "删除工作树检出..."]);
     }
 
     #[test]
@@ -2465,7 +2444,7 @@ mod tests {
 
         assert_eq!(
             menu.items(),
-            &["Rename", "Close", "New worktree", "Open worktree..."]
+            &["重命名", "关闭", "新建工作树", "打开工作树..."]
         );
     }
 
@@ -2485,13 +2464,7 @@ mod tests {
 
         assert_eq!(
             menu.items(),
-            &[
-                "Rename",
-                "Close group",
-                "New worktree",
-                "Open worktree...",
-                "Collapse"
-            ]
+            &["重命名", "关闭分组", "新建工作树", "打开工作树...", "折叠"]
         );
     }
 }

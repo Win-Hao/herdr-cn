@@ -121,7 +121,7 @@ fn announcement_from_manifest(
         .as_deref()
         .map(str::trim)
         .filter(|title| !title.is_empty())
-        .unwrap_or("announcement")
+        .unwrap_or("公告")
         .to_string();
 
     Some(ProductAnnouncement {

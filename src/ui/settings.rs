@@ -57,7 +57,7 @@ pub(super) fn render_settings_overlay(app: &AppState, frame: &mut Frame, area: R
 
     frame.render_widget(
         Paragraph::new(Line::from(vec![Span::styled(
-            " settings",
+            " 设置",
             Style::default().fg(p.text).add_modifier(Modifier::BOLD),
         )])),
         header_rows[0],
@@ -111,8 +111,8 @@ pub(super) fn render_settings_overlay(app: &AppState, frame: &mut Frame, area: R
                 frame,
                 content_area,
                 p,
-                "sound alerts",
-                "play sounds when agents change state in background",
+                "声音提醒",
+                "Agent 在后台切换状态时播放声音",
                 app.sound_enabled(),
                 app.settings.list.selected,
             );
@@ -121,13 +121,13 @@ pub(super) fn render_settings_overlay(app: &AppState, frame: &mut Frame, area: R
             render_modal_choice_list(
                 frame,
                 content_area,
-                "notification popups",
-                "choose where background popup notifications should appear",
+                "通知弹窗",
+                "选择后台通知弹窗的显示位置",
                 &[
-                    ("off", ToastDelivery::Off),
-                    ("inside herdr", ToastDelivery::Herdr),
-                    ("via terminal", ToastDelivery::Terminal),
-                    ("via system", ToastDelivery::System),
+                    ("关闭", ToastDelivery::Off),
+                    ("在 herdr 内", ToastDelivery::Herdr),
+                    ("通过终端", ToastDelivery::Terminal),
+                    ("通过系统", ToastDelivery::System),
                 ],
                 app.toast_delivery(),
                 app.settings.list.selected,
@@ -140,8 +140,8 @@ pub(super) fn render_settings_overlay(app: &AppState, frame: &mut Frame, area: R
                 frame,
                 content_area,
                 p,
-                "agent border labels",
-                "show detected agent names in split pane borders",
+                "Agent 边框标签",
+                "在分屏窗格的边框上显示检测到的 Agent 名称",
                 app.agent_border_labels_enabled(),
                 app.settings.list.selected,
             );
@@ -174,7 +174,7 @@ pub(super) fn render_settings_overlay(app: &AppState, frame: &mut Frame, area: R
             frame,
             close_rect,
             Some("esc"),
-            "close",
+            "关闭",
             Style::default()
                 .fg(p.text)
                 .bg(p.surface0)
@@ -184,9 +184,9 @@ pub(super) fn render_settings_overlay(app: &AppState, frame: &mut Frame, area: R
         frame.render_widget(
             Paragraph::new(Line::from(vec![
                 Span::styled(" ↑↓", Style::default().fg(p.overlay0)),
-                Span::styled(" select  ", Style::default().fg(p.overlay1)),
+                Span::styled(" 选择  ", Style::default().fg(p.overlay1)),
                 Span::styled("tab", Style::default().fg(p.overlay0)),
-                Span::styled(" section", Style::default().fg(p.overlay1)),
+                Span::styled(" 切换分区", Style::default().fg(p.overlay1)),
             ])),
             footer_rows[0],
         );
@@ -197,8 +197,8 @@ pub(crate) fn settings_primary_button_label(
     section: crate::app::state::SettingsSection,
 ) -> &'static str {
     match section {
-        crate::app::state::SettingsSection::Integrations => "install",
-        _ => "apply",
+        crate::app::state::SettingsSection::Integrations => "安装",
+        _ => "应用",
     }
 }
 
@@ -222,7 +222,7 @@ pub(crate) fn settings_button_rects(
             inner,
             &[ActionButtonSpec {
                 hint: Some("esc"),
-                label: "close",
+                label: "关闭",
             }],
             2,
             inner.height.saturating_sub(1),
@@ -239,7 +239,7 @@ pub(crate) fn settings_button_rects(
             },
             ActionButtonSpec {
                 hint: Some("esc"),
-                label: "close",
+                label: "关闭",
             },
         ],
         2,
@@ -267,11 +267,11 @@ fn integrations_footer_paragraph(app: &AppState) -> Paragraph<'static> {
             .iter()
             .any(crate::integration::IntegrationRecommendation::needs_install)
         {
-            " press install to add available or outdated integrations"
+            " 点击安装以添加可用或需更新的集成"
         } else if found_any {
-            " all detected integrations are installed"
+            " 检测到的集成均已安装"
         } else {
-            " no supported agent CLIs found on PATH"
+            " 在 PATH 中未找到受支持的 Agent CLI"
         };
         footer_lines.push(Line::from(Span::styled(
             hint.to_string(),
@@ -302,16 +302,14 @@ fn render_settings_integrations(app: &AppState, frame: &mut Frame, area: Rect) {
     .areas::<6>(area);
 
     frame.render_widget(
-        Paragraph::new("agent integrations")
+        Paragraph::new("Agent 集成")
             .style(Style::default().fg(p.text).add_modifier(Modifier::BOLD)),
         rows[0],
     );
     frame.render_widget(
-        Paragraph::new(
-            "let agents report state directly instead of relying only on process detection",
-        )
-        .style(Style::default().fg(p.overlay1))
-        .wrap(ratatui::widgets::Wrap { trim: false }),
+        Paragraph::new("让 Agent 直接上报状态，而不是仅依赖进程检测")
+            .style(Style::default().fg(p.overlay1))
+            .wrap(ratatui::widgets::Wrap { trim: false }),
         rows[1],
     );
 
@@ -345,7 +343,7 @@ fn render_settings_integrations(app: &AppState, frame: &mut Frame, area: Rect) {
 
     if lines.is_empty() {
         lines.push(Line::from(Span::styled(
-            " no integration targets available",
+            " 没有可用的集成目标",
             Style::default().fg(p.overlay1),
         )));
     }
@@ -399,7 +397,7 @@ fn render_settings_toggle(
         area,
         title,
         description,
-        &[("on", true), ("off", false)],
+        &[("开启", true), ("关闭", false)],
         current_value,
         selected_idx,
         p,

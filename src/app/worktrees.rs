@@ -24,16 +24,14 @@ impl App {
         String,
     > {
         let Some(ws) = self.state.workspaces.get(ws_idx) else {
-            return Err("Workspace not found.".into());
+            return Err("未找到工作区。".into());
         };
         let existing_membership = ws.worktree_space().cloned();
         if existing_membership
             .as_ref()
             .is_some_and(|membership| membership.is_linked_worktree)
         {
-            return Err(
-                "New and open worktree actions start from the repo parent workspace.".into(),
-            );
+            return Err("新建和打开工作树操作需从仓库父工作区发起。".into());
         }
 
         let git_space = ws.git_space().cloned().or_else(|| {
@@ -45,9 +43,7 @@ impl App {
             .as_ref()
             .is_some_and(|metadata| metadata.is_linked_worktree)
         {
-            return Err(
-                "New and open worktree actions start from the repo parent workspace.".into(),
-            );
+            return Err("新建和打开工作树操作需从仓库父工作区发起。".into());
         }
 
         let space = existing_membership
@@ -61,9 +57,7 @@ impl App {
                     is_linked_worktree: membership.is_linked_worktree,
                 })
             })
-            .ok_or_else(|| {
-                "Herdr worktree actions require a workspace inside a Git work tree.".to_string()
-            })?;
+            .ok_or_else(|| "Herdr 工作树操作要求工作区位于 Git 工作树内。".to_string())?;
         let source_checkout_path = existing_membership
             .as_ref()
             .map(|membership| membership.checkout_path.clone())
@@ -132,8 +126,7 @@ impl App {
             .worktree_space()
             .is_some_and(|space| space.is_linked_worktree)
         {
-            self.state.config_diagnostic =
-                Some("This workspace is not a Herdr-managed worktree checkout.".into());
+            self.state.config_diagnostic = Some("此工作区不是 Herdr 管理的工作树检出。".into());
             return;
         }
         let Some(space) = ws.worktree_space().cloned() else {
@@ -212,7 +205,7 @@ impl App {
             .collect::<Vec<_>>();
 
         if entries.is_empty() {
-            self.state.config_diagnostic = Some("No Git worktrees found for this repo.".into());
+            self.state.config_diagnostic = Some("未找到该仓库的 Git 工作树。".into());
             return;
         }
 
@@ -424,7 +417,7 @@ impl App {
                     selected: 0,
                     query: String::new(),
                     search_focused: false,
-                    error: Some(format!("failed to open worktree: {err}")),
+                    error: Some(format!("打开工作树失败：{err}")),
                 });
                 self.state.mode = Mode::OpenExistingWorktree;
             }
@@ -508,7 +501,7 @@ impl App {
         };
         let branch = create.branch.trim().to_string();
         if branch.is_empty() {
-            create.error = Some("branch is required".into());
+            create.error = Some("分支名不能为空".into());
             return;
         }
         if create.creating {
@@ -570,7 +563,7 @@ impl App {
         };
         let branch = create.branch.trim().to_string();
         if branch.is_empty() {
-            create.error = Some("branch is required".into());
+            create.error = Some("分支名不能为空".into());
             return;
         }
         if create.creating {
@@ -856,9 +849,8 @@ impl App {
                             }
                         }
                         Err(err) => {
-                            self.state.config_diagnostic = Some(format!(
-                                "created worktree but failed to open workspace: {err}"
-                            ));
+                            self.state.config_diagnostic =
+                                Some(format!("已创建工作树，但打开工作区失败：{err}"));
                             self.state.mode = Mode::Navigate;
                         }
                     }
@@ -1507,7 +1499,7 @@ mod tests {
         assert!(app.state.worktree_create.is_none());
         assert_eq!(
             app.state.config_diagnostic.as_deref(),
-            Some("New and open worktree actions start from the repo parent workspace.")
+            Some("新建和打开工作树操作需从仓库父工作区发起。")
         );
 
         app.state.config_diagnostic = None;
@@ -1516,7 +1508,7 @@ mod tests {
         assert!(app.state.worktree_open.is_none());
         assert_eq!(
             app.state.config_diagnostic.as_deref(),
-            Some("New and open worktree actions start from the repo parent workspace.")
+            Some("新建和打开工作树操作需从仓库父工作区发起。")
         );
     }
 

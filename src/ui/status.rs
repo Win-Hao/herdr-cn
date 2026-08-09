@@ -205,11 +205,11 @@ pub(super) fn state_dot(state: AgentState, seen: bool, p: &Palette) -> (&'static
 
 pub(super) fn state_label(state: AgentState, seen: bool) -> &'static str {
     match (state, seen) {
-        (AgentState::Blocked, _) => "blocked",
-        (AgentState::Working, _) => "working",
-        (AgentState::Idle, false) => "done",
-        (AgentState::Idle, true) => "idle",
-        (AgentState::Unknown, _) => "idle",
+        (AgentState::Blocked, _) => "待响应",
+        (AgentState::Working, _) => "运行中",
+        (AgentState::Idle, false) => "完成",
+        (AgentState::Idle, true) => "空闲",
+        (AgentState::Unknown, _) => "空闲",
     }
 }
 

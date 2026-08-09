@@ -196,9 +196,9 @@ fn toast_agent_label(agent_label: &str) -> &str {
 
 fn toast_event_text(kind: ToastKind) -> &'static str {
     match kind {
-        ToastKind::NeedsAttention => "needs attention",
-        ToastKind::Finished => "finished",
-        ToastKind::UpdateInstalled => "updated",
+        ToastKind::NeedsAttention => "待响应",
+        ToastKind::Finished => "完成",
+        ToastKind::UpdateInstalled => "已更新",
     }
 }
 
@@ -2730,7 +2730,7 @@ impl AppState {
                 ) {
                     self.toast = Some(ToastNotification {
                         kind: ToastKind::UpdateInstalled,
-                        title: format!("v{version} available"),
+                        title: format!("v{version} 可用"),
                         context: crate::update::update_install_instruction(&install_command),
                         position: None,
                         target: None,
@@ -2760,7 +2760,7 @@ impl AppState {
                         .join(", ");
                     self.toast = Some(ToastNotification {
                         kind: ToastKind::UpdateInstalled,
-                        title: "Agent detection rules updated".to_string(),
+                        title: "Agent 检测规则已更新".to_string(),
                         context: agent_list,
                         position: None,
                         target: None,
@@ -4976,7 +4976,7 @@ mod tests {
 
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::NeedsAttention);
-        assert_eq!(toast.title, "pi needs attention");
+        assert_eq!(toast.title, "pi 待响应");
         assert_eq!(toast.context, "background · 2");
     }
 
@@ -5007,7 +5007,7 @@ mod tests {
 
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::NeedsAttention);
-        assert_eq!(toast.title, "pi needs attention");
+        assert_eq!(toast.title, "pi 待响应");
         assert_eq!(toast.context, "background · 2");
         assert!(state.pending_agent_notifications.is_empty());
     }
@@ -5144,7 +5144,7 @@ mod tests {
 
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::NeedsAttention);
-        assert_eq!(toast.title, "hermes needs attention");
+        assert_eq!(toast.title, "hermes 待响应");
         assert_eq!(toast.context, "background · 2");
     }
 
@@ -5193,7 +5193,7 @@ mod tests {
         assert_eq!(terminal.state, AgentState::Blocked);
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::NeedsAttention);
-        assert_eq!(toast.title, "codex needs attention");
+        assert_eq!(toast.title, "codex 待响应");
     }
 
     #[test]
@@ -5462,7 +5462,7 @@ mod tests {
 
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::Finished);
-        assert_eq!(toast.title, "droid finished");
+        assert_eq!(toast.title, "droid 完成");
         assert_eq!(toast.context, "background · 2");
         let target = toast.target.as_ref().expect("toast target");
         assert_eq!(&target.workspace_id, &state.workspaces[1].id);
@@ -5491,7 +5491,7 @@ mod tests {
 
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::NeedsAttention);
-        assert_eq!(toast.title, "pi needs attention");
+        assert_eq!(toast.title, "pi 待响应");
         assert_eq!(toast.context, "background · 2 · logs");
     }
 
@@ -5517,7 +5517,7 @@ mod tests {
 
         let toast = state.toast.as_ref().unwrap();
         assert_eq!(toast.kind, ToastKind::NeedsAttention);
-        assert_eq!(toast.title, "pi needs attention");
+        assert_eq!(toast.title, "pi 待响应");
         assert_eq!(toast.context, "active · 1 · logs");
     }
 
@@ -5586,7 +5586,7 @@ mod tests {
         assert!(state.update_dismissed);
         let toast = state.toast.as_ref().expect("update toast");
         assert_eq!(toast.kind, ToastKind::UpdateInstalled);
-        assert_eq!(toast.title, "v0.5.0 available");
+        assert_eq!(toast.title, "v0.5.0 可用");
         assert_eq!(
             toast.context,
             "detach, run `herdr update`, then follow its restart guidance"
@@ -5639,7 +5639,7 @@ mod tests {
         );
         let toast = state.toast.as_ref().expect("manifest update toast");
         assert_eq!(toast.kind, ToastKind::UpdateInstalled);
-        assert_eq!(toast.title, "Agent detection rules updated");
+        assert_eq!(toast.title, "Agent 检测规则已更新");
         assert_eq!(toast.context, "codex 2026.06.10.1");
     }
 

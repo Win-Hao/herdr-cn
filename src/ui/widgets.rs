@@ -6,6 +6,7 @@ use ratatui::{
     Frame,
 };
 
+use super::text::display_width_u16;
 use crate::app::state::Palette;
 
 pub(super) fn render_panel_shell(
@@ -140,7 +141,7 @@ pub(crate) fn action_button_text(hint: Option<&str>, label: &str) -> String {
 }
 
 pub(crate) fn action_button_width(hint: Option<&str>, label: &str) -> u16 {
-    action_button_text(hint, label).chars().count() as u16
+    display_width_u16(&action_button_text(hint, label))
 }
 
 pub(crate) struct ActionButtonSpec<'a> {

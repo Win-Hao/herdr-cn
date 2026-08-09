@@ -2,6 +2,7 @@ use bytes::Bytes;
 use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 use ratatui::layout::{Direction, Rect};
 use tracing::warn;
+use unicode_width::UnicodeWidthStr;
 
 use crate::{
     app::state::{
@@ -1229,7 +1230,7 @@ impl AppState {
         let max_item_w = menu
             .items()
             .iter()
-            .map(|item| item.len() as u16)
+            .map(|item| UnicodeWidthStr::width(*item) as u16)
             .max()
             .unwrap_or(0);
         let menu_w = (max_item_w + 4).max(14).min(screen.width.max(1));
@@ -2372,7 +2373,7 @@ mod tests {
         let swap_idx = menu
             .items()
             .iter()
-            .position(|item| *item == "Swap with focused pane")
+            .position(|item| *item == "与聚焦窗格交换")
             .expect("swap item");
         menu.list.highlighted = swap_idx;
 
@@ -2450,7 +2451,7 @@ mod tests {
                 ..
             } if pane_id == target && source_pane_id == source
         ));
-        assert!(menu.items().contains(&"Swap with focused pane"));
+        assert!(menu.items().contains(&"与聚焦窗格交换"));
     }
 
     #[tokio::test]
@@ -3571,7 +3572,7 @@ mod tests {
         let close_idx = menu_state
             .items()
             .iter()
-            .position(|item| *item == "Close pane")
+            .position(|item| *item == "关闭窗格")
             .expect("close pane menu item");
         let menu = app
             .state
@@ -3624,7 +3625,7 @@ mod tests {
         let close_idx = menu_state
             .items()
             .iter()
-            .position(|item| *item == "Close pane")
+            .position(|item| *item == "关闭窗格")
             .expect("close pane menu item");
         let menu = app
             .state

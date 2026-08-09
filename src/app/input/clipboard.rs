@@ -164,7 +164,7 @@ mod tests {
                 .copy_feedback
                 .as_ref()
                 .map(|feedback| feedback.message.as_str()),
-            Some("copied to clipboard")
+            Some("已复制到剪贴板")
         );
 
         app.route_client_events_from(

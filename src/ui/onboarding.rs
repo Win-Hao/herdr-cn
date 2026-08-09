@@ -20,12 +20,7 @@ pub(super) fn render_onboarding_overlay(app: &AppState, frame: &mut Frame, area:
 }
 
 pub(crate) fn onboarding_welcome_continue_rect(area: Rect) -> Rect {
-    Rect::new(
-        area.x,
-        area.y,
-        action_button_width(Some("↵"), "continue"),
-        1,
-    )
+    Rect::new(area.x, area.y, action_button_width(Some("↵"), "继续"), 1)
 }
 
 fn render_onboarding_welcome(app: &AppState, frame: &mut Frame, area: Rect) {
@@ -56,14 +51,14 @@ fn render_onboarding_welcome(app: &AppState, frame: &mut Frame, area: Rect) {
         header_rows[0],
     );
     frame.render_widget(
-        Paragraph::new("  terminal workspace manager for coding agents")
+        Paragraph::new("  面向编码 Agent 的终端工作区管理器")
             .style(Style::default().fg(app.palette.overlay0)),
         header_rows[1],
     );
 
     frame.render_widget(
         Paragraph::new(
-            "  this is a mouse-first terminal.\n  click the sidebar to switch workspaces, drag pane\n  borders to resize, right-click for context menus.",
+            "  这是一个鼠标优先的终端。\n  点击侧边栏切换工作区，拖动窗格边框调整大小，\n  右键点击可打开上下文菜单。",
         )
         .style(Style::default().fg(app.palette.overlay1)),
         content_rows[0],
@@ -78,7 +73,7 @@ fn render_onboarding_welcome(app: &AppState, frame: &mut Frame, area: Rect) {
                 .add_modifier(Modifier::BOLD),
         ),
         Span::styled(
-            " enters prefix mode · ",
+            " 进入前缀模式 · ",
             Style::default().fg(app.palette.overlay1),
         ),
         Span::styled(
@@ -88,14 +83,14 @@ fn render_onboarding_welcome(app: &AppState, frame: &mut Frame, area: Rect) {
                 .add_modifier(Modifier::BOLD),
         ),
         Span::styled(
-            " shows keybinds and settings",
+            " 显示快捷键和设置",
             Style::default().fg(app.palette.overlay1),
         ),
     ]);
     frame.render_widget(Paragraph::new(key_line), content_rows[2]);
 
     frame.render_widget(
-        Paragraph::new("  next: install optional agent integrations for more reliable state")
+        Paragraph::new("  下一步：安装可选的 Agent 集成，让状态识别更可靠")
             .style(Style::default().fg(app.palette.overlay1)),
         content_rows[3],
     );
@@ -105,7 +100,7 @@ fn render_onboarding_welcome(app: &AppState, frame: &mut Frame, area: Rect) {
         frame,
         continue_rect,
         Some("↵"),
-        "continue",
+        "继续",
         Style::default()
             .fg(panel_contrast_fg(&app.palette))
             .bg(app.palette.accent)

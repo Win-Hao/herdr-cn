@@ -131,22 +131,22 @@ impl App {
         ) -> std::io::Result<(TerminalRuntime, Option<Vec<String>>)>,
     {
         if self.state.popup_pane.is_some() {
-            return Err(std::io::Error::other("popup already open"));
+            return Err(std::io::Error::other("弹出窗格已打开"));
         }
         let Some(ws_idx) = self.state.active else {
-            return Err(std::io::Error::other("no active workspace"));
+            return Err(std::io::Error::other("没有活动的工作区"));
         };
         let ws = self
             .state
             .workspaces
             .get(ws_idx)
-            .ok_or_else(|| std::io::Error::other("active workspace disappeared"))?;
+            .ok_or_else(|| std::io::Error::other("活动工作区已消失"))?;
         let active_tab = ws
             .active_tab()
-            .ok_or_else(|| std::io::Error::other("active tab disappeared"))?;
+            .ok_or_else(|| std::io::Error::other("活动标签页已消失"))?;
         let focused_pane = ws
             .focused_pane_id()
-            .ok_or_else(|| std::io::Error::other("active tab has no focused pane"))?;
+            .ok_or_else(|| std::io::Error::other("活动标签页没有聚焦的窗格"))?;
         let cwd = cwd.or_else(|| {
             active_tab.cwd_for_pane(focused_pane, &self.state.terminals, &self.terminal_runtimes)
         });
@@ -165,7 +165,7 @@ impl App {
         let Some(resolved_geometry) =
             resolve_popup_geometry(geometry.width, geometry.height, terminal_area)
         else {
-            return Err(std::io::Error::other("terminal area too small for popup"));
+            return Err(std::io::Error::other("终端区域太小，无法显示弹出窗格"));
         };
         let rows = resolved_geometry.inner.height;
         let cols = resolved_geometry.inner.width;
