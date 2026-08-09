@@ -10,11 +10,14 @@ herdr 是一个为 AI 编码 agent（Claude Code、Codex、Gemini CLI 等）设�
 
 - **全界面汉化**：侧边栏、菜单、对话框、设置、快捷键帮助、导航器、通知等全部用户可见文案（协议字段、配置键、CLI 保持原样以兼容生态）
 - **CJK 显示修复**：按钮 / 菜单宽度按 Unicode 显示宽度计算，中文不截断、点击区域不偏移
-- **更新渠道调整**：禁用了指向官方源的自更新（避免更新后变回英文版）；新版汉化包请从本仓库 [Releases](../../releases) 获取
+- **更新渠道指向 herdr-cn**：`herdr update` 与内置的「更新就绪」提示获取的都是本仓库发布的新版汉化包（SHA-256 校验照常），不会被上游英文版覆盖；preview 通道暂不提供
+- **Windows 支持 stable 通道**：上游的 Windows 版只能走 preview 通道，herdr-cn 全平台统一 stable
 
 除以上改动外，功能与官方 v0.8.0 完全一致。官方原版说明见 [README.upstream.md](README.upstream.md)（英文）与 [README.zh-CN.md](README.zh-CN.md)（官方中文简介）。
 
-## 安装（macOS Apple Silicon）
+## 安装
+
+**macOS**（Apple Silicon 用 `herdr-macos-aarch64`，Intel 用 `herdr-macos-x86_64`）：
 
 ```bash
 curl -L -o herdr https://github.com/Win-Hao/herdr-cn/releases/latest/download/herdr-macos-aarch64
@@ -23,7 +26,20 @@ xattr -d com.apple.quarantine herdr 2>/dev/null || true
 sudo mv herdr /usr/local/bin/herdr
 ```
 
-若之前在用官方英文版，先执行 `herdr server stop` 停掉旧服务再启动中文版（工作区布局会自动恢复）。
+**Linux**（x86_64 / aarch64，musl 静态链接，任何发行版可用）：
+
+```bash
+curl -L -o herdr https://github.com/Win-Hao/herdr-cn/releases/latest/download/herdr-linux-x86_64
+chmod +x herdr && sudo mv herdr /usr/local/bin/herdr
+```
+
+**Windows**（PowerShell，自动下载安装并加入 PATH）：
+
+```powershell
+irm https://raw.githubusercontent.com/Win-Hao/herdr-cn/zh-cn/website/install.ps1 | iex
+```
+
+若之前在用官方英文版，先执行 `herdr server stop` 停掉旧服务再启动中文版（工作区布局会自动恢复）。安装后 `herdr update` 即可获取后续汉化版更新。
 
 ## 从源码编译
 
