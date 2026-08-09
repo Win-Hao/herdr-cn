@@ -1969,9 +1969,17 @@ fn homebrew_cellar_keg_root(path: &Path) -> Option<PathBuf> {
 /// Manual self-update command (`herdr update`).
 pub fn self_update(options: SelfUpdateOptions) -> Result<Version, String> {
     let channel = UpdateChannel::configured();
-    // herdr-cn: upstream rejects stable self-update on Windows because it
-    // only ships Windows preview builds. The herdr-cn stable feed carries a
-    // Windows asset, so the stable channel works on Windows here.
+    // herdr-cn: mirror upstream's caution — upstream keeps Windows out of
+    // its stable channel because Windows builds are not stable-grade yet,
+    // and the herdr-cn Windows build is even less validated. Ship it as an
+    // experimental manual install without self-update until upstream
+    // promotes Windows to stable or herdr-cn gets real Windows validation.
+    if cfg!(windows) {
+        return Err(
+            "self-update is disabled：Windows 版目前为实验性构建，暂不支持自更新。\n更新方式：重新运行安装命令（README 的 Windows 一节），或从 GitHub Releases 手动下载。"
+                .into(),
+        );
+    }
 
     if is_homebrew_managed_install() {
         if channel == UpdateChannel::Preview {
